@@ -1,21 +1,29 @@
+
 import Tokens
-import Grammar
+import Grammar 
 import System.Environment
 import Control.Exception
 import System.IO
 
-main :: IO ()
-main = catch main' noParse
+main, main' :: IO ()
 
-main' = do (fileName : _ ) <- getArgs 
-           sourceText <- readFile fileName
-           putStrLn ("Parsing : " ++ sourceText)
-           let parsedProg = parseCalc (alexScanTokens sourceText)
-           putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
-           let result = evalLoop (parsedProg)
-           putStrLn ("Evaluates to " ++ (unparse result) ++ "\n")
+main = catch main' handler
 
-noParse :: ErrorCall -> IO ()
-noParse e = do let err =  show e
-               hPutStr stderr err
-               return ()
+main' = do (fileName : _ ) <- getArgs
+  sourceText <- readFile fileName
+  putStrLn ("Parsing: " ++ sourceText)
+  let parsedProgram = parseCalc (alexScanTokens sourceText)
+  putStrLn ("Parsed as " ++ (show parsedProgram) ++ "\n")
+  let result = evalLoop (parsedProgram)
+  putStrLn ("Evaluates to " ++ (unprase result) ++ "\n")
+  
+  let tokens = alexScanTokens fileContents
+  let tokens' = parseCalc $ alexScanTokens fileContents
+  putStrLn $ "Token List after lexing: " ++ show tokens
+  putStrLn $ "Expression after parsing: " ++ show tokens'
+
+handler :: ErrorCall -> IO ()
+handler e  = do let err = show err
+                hPutStr stderr err
+                return ()
+  
