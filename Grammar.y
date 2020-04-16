@@ -56,6 +56,4 @@ data Exp = Let String Exp Exp
          | Int Int 
          | Var String 
          deriving Show 
-} 
-
 }
