@@ -38,7 +38,6 @@ $white+       ;
   \-             { tok (\p s -> TokenMinus p) }
   \*             { tok (\p s -> TokenTimes p) }
   \/             { tok (\p s -> TokenDiv p) }
-  \^             { tok (\p s -> TokenExp p) }
   \(             { tok (\p s -> TokenLParen p) }
   \)             { tok (\p s -> TokenRParen p) }
 
@@ -76,7 +75,6 @@ data Token =
   TokenMinus AlexPosn          |
   TokenTimes AlexPosn          |
   TokenDiv AlexPosn            |
-  TokenExp AlexPosn            |
 
   TokenLParen AlexPosn         |
   TokenRParen AlexPosn         |
@@ -112,7 +110,6 @@ tokenPosn (TokenPlus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenMinus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenTimes  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenDiv (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenExp (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 
 tokenPosn (TokenLParen (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenRParen (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
