@@ -1,0 +1,42 @@
+Array left[];
+var right[];
+
+
+while(nextInput != null){
+    left.push(readFile);
+    right.push(readFile);
+    left.push(readFile);
+    right.push(readFile);
+
+    write(first(left));
+    write(first(left));
+    write(first(right));
+}
+
+
+//ASSUMPTIONS
+
+variables
+
+functions
+
+bools
+
+EOL, EOF, null
+
+arrays implemented both as stacks and as queues: push, pop, enqueue, dequeue, peek, indexing
+
+array.length;
+array.add(item,index);
+array.add(item, array.length);
+array.add(item, 0);
+array.indexOF();
+
+if else 
+
+while loop
+
+read and write function
+
+nextInput function
+
