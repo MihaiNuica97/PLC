@@ -1,0 +1,17 @@
+Array[] stream1 = readFile(left);
+Array[] stream2 = readFile(right);
+Array[] output = [];
+
+output.push(0);
+
+while(a != null && b != null) {
+    int a = stream1.pop();
+    stream2.pop();
+    int b = stream2.pop();
+    
+
+    output.push(b);
+    output.push(a);
+}
+
+write.output;

@@ -49,31 +49,44 @@ import Tokens
 %left '*' '/' 
 %% 
 
-Exp : let var '=' Exp in Exp { Let $2 $4 $6 } 
+
+Exp :: {Expr}
+Exp : 
     | Exp '+' Exp            { Plus $1 $3 } 
     | Exp '-' Exp            { Minus $1 $3 } 
     | Exp '*' Exp            { Times $1 $3 } 
     | Exp '/' Exp            { Div $1 $3 } 
-
     | '(' Exp ')'            { $2 } 
-    | '-' Exp %prec NEG      { Negate $2 } 
+    | '-' Exp %prec NEG      { Negate $2 }
+    | true                   { True $1}
+    | false                  { False $1 }
     | int                    { Int $1 } 
     | var                    { Var $1 } 
 
+Syntax :: {Syntax}
+Syntax : 
+    | Bool 
+    | var push
+    | var pop 
+
 { 
+
 parseError :: [Token] -> a
 parseError [] = error "Unknown Parse Error" 
 parseError (t:ts) = error ("Parse error at line:column " ++ (tokenPosn t))
 
+data Line = 
 
 
-data Exp = Let String Exp Exp 
+data Exp = 
          | Plus Exp Exp 
          | Minus Exp Exp 
          | Times Exp Exp 
          | Div Exp Exp 
          | Expo Exp Exp
          | Negate Exp
+         | True 
+         | False 
          | Int Int 
          | Var String 
          deriving Show 

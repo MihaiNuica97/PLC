@@ -1,0 +1,43 @@
+----
+Mihai's pseucode
+----
+
+Array left[];
+var right[];
+
+
+while(nextInput != null){
+    left.push(readFile);
+    right.push(readFile);
+    left.push(readFile);
+    right.push(readFile);
+
+    write(first(left));
+    write(first(left));
+    write(first(right));
+}
+
+
+----
+Reece's alternative pseucode
+stream1 and stream2 are the left and right streams respectively - not sure how file processing will work just yet
+output is initially an empty list but we add to it
+
+----
+
+Array[] stream1 = readFile(left);
+Array[] stream2 = readFile(right);
+Array[] output = [];
+
+while(a != null && c != null && b != null) {
+    int a = stream1.pop()
+    int c = stream1.pop()
+    int b = stream2.pop()
+
+    output.push(a)
+    output.push(c)
+    output.push(b)
+}
+
+write.output;
+
