@@ -1,0 +1,13 @@
+Array[] stream;
+
+while(a != null && c != null && b != null) {
+    int a = stream.pop();
+    int b = stream.pop();
+    int c = stream.pop();
+
+    output.push(c);
+    output.push(2*b);
+    output.push((3*a)-1);
+}
+
+write.output;

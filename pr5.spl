@@ -1,0 +1,10 @@
+Array[] stream;
+int accumulator = 0;
+
+while(a != null ) {
+    int a = stream.pop();
+    accumulator = accumulator + a
+    output.push(accumulator);
+}
+
+write.output;
