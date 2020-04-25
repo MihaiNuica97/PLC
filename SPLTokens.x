@@ -12,8 +12,8 @@ tokens :-
 $white+       ; 
   "--".*      ;
   $digit+        { tok (\p s -> TokenInt p (read s)) } 
-  let           { tok (\p s -> TokenLet p)} 
-  in            { tok (\p s -> TokenIn p) }
+  let            { tok (\p s -> TokenLet p)} 
+  in             { tok (\p s -> TokenIn p) }
   \=             { tok (\p s -> TokenEq p) }
   \+             { tok (\p s -> TokenPlus p) }
   \-             { tok (\p s -> TokenMinus p) }
