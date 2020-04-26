@@ -28,15 +28,21 @@ import SPLTokens
     %left '*' '/' 
     %left '^'
     %left NEG 
-    %nonassoc nl
+    %left nl
     %nonassoc int true false var '(' ')'
     %nonassoc print
 %% 
 
 
+Exps : Exp' { [$1] }
+    |Exps Exp' { $2 : $1 }
+
+Exp' : Exp nl   { $1 }
+    |Exp        { $1 }
+
+
 Exp :: {Exp}
 Exp :  let var '=' Exp in Exp { Let $2 $4 $6 } 
-    | Exp nl                 { $1 }
     |  Exp '+' Exp           { Plus $1 $3 } 
     | Exp '-' Exp            { Minus $1 $3 } 
     | Exp '*' Exp            { Times $1 $3 } 
@@ -48,6 +54,7 @@ Exp :  let var '=' Exp in Exp { Let $2 $4 $6 }
     | false                  { Bool $1} 
     | var                    { Var $1 }
     | print Exp              { Print $2 }
+
 
 
 { 
@@ -69,5 +76,6 @@ data Exp = Let String Exp Exp
         | Bool Bool
         | Var String 
         |Print Exp
+        |Exp Exp
          deriving Show 
 }
