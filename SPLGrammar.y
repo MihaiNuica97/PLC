@@ -52,7 +52,7 @@ Exp :  let var '=' Exp in Exp { Let $2 $4 $6 }
     | true                   { Bool $1}
     | false                  { Bool $1} 
     | var                    { Var $1 }
-    | print Exp              { Print $2 }
+    | print '('Exp')'              { Print $3 }
 
 
 
@@ -62,7 +62,7 @@ parseError :: [Token] -> a
 parseError [] = error "Unknown Parse Error" 
 parseError (t:ts) = error ("Parse error at line:column " ++ (tokenPosn t))
 
-data Type = TyBool
+data Type = TyBool | TyInt
 
 data Exp = Let String Exp Exp 
         | Plus Exp Exp 
@@ -73,8 +73,8 @@ data Exp = Let String Exp Exp
         | Negate Exp
         | Int Int 
         | Bool Bool
+        | String String
         | Var String 
         |Print Exp
-        |Exp Exp
          deriving Show 
 }
