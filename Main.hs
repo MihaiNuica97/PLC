@@ -31,7 +31,7 @@ main' = do (fileName : _ ) <- getArgs
            putStrLn ("Tokens : " ++ (show tokens))
            let parsedProg = parseCalc tokens
            putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
-           eval [parsedProg] []
+           eval parsedProg []
            --IGNORE THIS FOR NOW
            --let parsedProg = parseCalc (alexScanTokens sourceText)
            --putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
