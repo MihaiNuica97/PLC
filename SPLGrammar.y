@@ -34,12 +34,11 @@ import SPLTokens
 %% 
 
 
-Exps : Exp' { [$1] }
-    |Exps Exp' { $2 : $1 }
 
-Exp' : Exp nl   { $1 }
-    |Exp        { $1 }
-
+Exps : Exps nl Exp      { $3 : $1 }
+      | Exps nl         { $1 }
+      | Exp            { [$1] }
+      | {- empty -}		{ [] }
 
 Exp :: {Exp}
 Exp :  let var '=' Exp in Exp { Let $2 $4 $6 } 
