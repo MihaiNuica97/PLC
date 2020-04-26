@@ -39,3 +39,5 @@ handler e  = do let err = show err
 convertToList :: [String] -> [Int]
 convertToList [] = []
 convertToList (x:xs) = map digitToInt x ++ intList xs 
+
+
