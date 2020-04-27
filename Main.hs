@@ -5,7 +5,6 @@ import System.Environment
 import Control.Exception
 import System.IO
 import Data.List
-import Data.Char(digitToInt)
 
 --main method code adapted from Julians provided tutorials
 
@@ -14,14 +13,9 @@ main :: IO ([Map])
 main = catch main' noParse
 
 main' = do (fileName : _ ) <- getArgs 
-            {-- used for CMD input
-           content <- getContents 
-           let ints = intList content
-           -} 
-
-           -- reads a file, converts a single vertical stream to a list of ints
            sourceText <- readFile fileName
            putStrLn ("Parsing from file : " ++ fileName ++ "\n" ++ sourceText)
+           -- reads a file, converts a single vertical stream to a list of ints
            let ints = convertToMatrix (lines sourceText)
            putStrLn ("Showing vertical stream as int list" ++ (show ints))
            
@@ -29,9 +23,7 @@ main' = do (fileName : _ ) <- getArgs
            let streams = transpose (ints)
            putStrLn ("Tranposing matrix to represent streams " ++ (show streams))
 
-           
-           sourceText <- readFile fileName
-           putStrLn ("Parsing : " ++ sourceText)
+           --Mihai's
            let tokens = alexScanTokens sourceText
            putStrLn ("Tokens : " ++ (show tokens))
            let parsedProg = parseCalc tokens
@@ -52,5 +44,3 @@ convertToMatrix (x:xs) = (convertRow $ words x) : (convertToMatrix xs)
 convertRow :: [String] -> [Int]
 convertRow [] = []
 convertRow (x:xs) = [(read x :: Int)] ++ convertRow xs
-
-
