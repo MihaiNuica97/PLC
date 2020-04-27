@@ -1,6 +1,6 @@
 import SPLTokens
 import SPLGrammar 
-import SPLInterpreter 
+import SPLEval
 import System.Environment
 import Control.Exception
 import System.IO
@@ -9,9 +9,9 @@ import Data.Char(digitToInt)
 
 --main method code adapted from Julians provided tutorials
 
-main :: IO ()
+main :: IO ([Map])
 
-main = catch main' handler
+main = catch main' noParse
 
 main' = do (fileName : _ ) <- getArgs 
             {-- used for CMD input
@@ -29,16 +29,19 @@ main' = do (fileName : _ ) <- getArgs
            let streams = transpose (ints)
            putStrLn ("Tranposing matrix to represent streams " ++ (show streams))
 
-           --IGNORE THIS FOR NOW
-           --let parsedProg = parseCalc (alexScanTokens sourceText)
-           --putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
-           --let result = evalLoop (parsedProg)
-           --putStrLn ("Evaluates to " ++ (unparse result) ++ "\n")
+           
+           sourceText <- readFile fileName
+           putStrLn ("Parsing : " ++ sourceText)
+           let tokens = alexScanTokens sourceText
+           putStrLn ("Tokens : " ++ (show tokens))
+           let parsedProg = parseCalc tokens
+           putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
+           eval parsedProg []
         
-handler :: ErrorCall -> IO ()
-handler e  = do let err = show err
-                hPutStr stderr err
-                return ()
+noParse :: ErrorCall -> IO ([Map])
+noParse e = do let err =  show e
+               hPutStr stderr err
+               return ([])
  
 --Creates a matrix of [[row1], [row2], [row3]...]
 convertToMatrix :: [String] -> [[Int]]

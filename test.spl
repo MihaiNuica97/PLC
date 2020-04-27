@@ -1,1 +1,2 @@
-add 
+print(23);
+print(true)
