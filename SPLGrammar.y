@@ -8,13 +8,12 @@ import SPLTokens
 %error { parseError }
 %token 
     nl      { TokenNewLine _}
-    let     { TokenLet _ } 
-    in      { TokenIn _ } 
     int     { TokenInt _ $$ }
     true   { TokenBool _ $$}
     false  { TokenBool _ $$}
     string {TokenString _ $$}
-    var     { TokenVar _ $$ }
+    var     { TokenVar _ }
+    varName { TokenName _ $$ }
     '='     { TokenEq _ } 
     '+'     { TokenPlus _ } 
     '-'     { TokenMinus _ } 
@@ -24,12 +23,12 @@ import SPLTokens
     ')'     { TokenRParen _ } 
     print  { TokenPrint _}
 
-    %right in
     %left '+' '-' 
     %left '*' '/' 
     %left '^'
     %left NEG 
     %left nl
+    %right var
     %nonassoc int string true false var '(' ')'
     %nonassoc print
 %% 
@@ -42,8 +41,7 @@ Exps : Exps nl Exp      { $3 : $1 }
       | {- empty -}		{ [] }
 
 Exp :: {Exp}
-Exp :  let var '=' Exp in Exp { Let $2 $4 $6 } 
-    |  Exp '+' Exp           { Plus $1 $3 } 
+Exp : Exp '+' Exp           { Plus $1 $3 } 
     | Exp '-' Exp            { Minus $1 $3 } 
     | Exp '*' Exp            { Times $1 $3 } 
     | Exp '/' Exp            { Div $1 $3 } 
@@ -53,8 +51,11 @@ Exp :  let var '=' Exp in Exp { Let $2 $4 $6 }
     | true                   { Bool $1}
     | false                  { Bool $1} 
     | string                 { String $1}
-    | var                    { Var $1 }
-    | print '('Exp')'              { Print $3 }
+    | print '('Exp')'        { Print $3 }
+    | varName                { Lookup $1 }
+    | var varName            { Declare $2}
+    | varName '=' Exp        { Assign $1 $3}
+    | var varName '=' Exp    { DeclareWithVal $2 $4}
 
 
 
@@ -64,7 +65,8 @@ parseError :: [Token] -> a
 parseError [] = error "Unknown Parse Error" 
 parseError (t:ts) = error ("Parse error at line:column " ++ (tokenPosn t))
 
-data Type = TyBool Bool  | TyInt Int | TyString String
+data Type = TyBool Bool  | TyInt Int | TyString String | Empty
+
 
 data Exp = Let String Exp Exp 
         | Plus Exp Exp 
@@ -76,7 +78,11 @@ data Exp = Let String Exp Exp
         | Int Int 
         | Bool Bool
         | String String
-        | Var String 
-        |Print Exp
+        | Declare String 
+        | DeclareWithVal String Exp
+        | Assign String Exp
+        | Print Exp
+        | Type
+        | Lookup String
          deriving Show 
 }

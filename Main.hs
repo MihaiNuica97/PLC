@@ -29,7 +29,8 @@ main' = do (fileName : _ ) <- getArgs
            putStrLn ("Parsing : " ++ sourceText)
            let tokens = alexScanTokens sourceText
            putStrLn ("Tokens : " ++ (show tokens))
-           let parsedProg = parseCalc tokens
+           let parsedProg = reverse (parseCalc tokens)
+
            putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
            eval parsedProg []
            --IGNORE THIS FOR NOW
