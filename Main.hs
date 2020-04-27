@@ -25,6 +25,10 @@ main' = do (fileName : _ ) <- getArgs
            let ints = convertToMatrix (lines sourceText)
            putStrLn ("Showing vertical stream as int list" ++ (show ints))
            
+           --tranposes matrix e.g [[row1], [row2]...] -> [[col1], [col2]...]
+           let streams = transpose (ints)
+           putStrLn ("Tranposing matrix to represent streams " ++ (show streams))
+
            --IGNORE THIS FOR NOW
            --let parsedProg = parseCalc (alexScanTokens sourceText)
            --putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
@@ -36,22 +40,14 @@ handler e  = do let err = show err
                 hPutStr stderr err
                 return ()
  
-
+--Creates a matrix of [[row1], [row2], [row3]...]
 convertToMatrix :: [String] -> [[Int]]
 convertToMatrix [] = []
 convertToMatrix (x:xs) = (convertRow $ words x) : (convertToMatrix xs)
 
+--converts a single line/row to a list of ints 
 convertRow :: [String] -> [Int]
 convertRow [] = []
 convertRow (x:xs) = [(read x :: Int)] ++ convertRow xs
 
-
-
-
-
-
---OLD CODE NOT NEEDED ATM
-convertToList :: [String] -> [Int]
-convertToList [] = []
-convertToList (x:xs) =(map digitToInt x) ++ (convertToList xs) 
 
