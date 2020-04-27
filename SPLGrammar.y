@@ -10,9 +10,10 @@ import SPLTokens
     nl      { TokenNewLine _}
     let     { TokenLet _ } 
     in      { TokenIn _ } 
-    int     { TokenInt _ $$ } 
+    int     { TokenInt _ $$ }
     true   { TokenBool _ $$}
     false  { TokenBool _ $$}
+    string {TokenString _ $$}
     var     { TokenVar _ $$ }
     '='     { TokenEq _ } 
     '+'     { TokenPlus _ } 
@@ -29,7 +30,7 @@ import SPLTokens
     %left '^'
     %left NEG 
     %left nl
-    %nonassoc int true false var '(' ')'
+    %nonassoc int string true false var '(' ')'
     %nonassoc print
 %% 
 
@@ -51,6 +52,7 @@ Exp :  let var '=' Exp in Exp { Let $2 $4 $6 }
     | int                    { Int $1 } 
     | true                   { Bool $1}
     | false                  { Bool $1} 
+    | string                 { String $1}
     | var                    { Var $1 }
     | print '('Exp')'              { Print $3 }
 
@@ -62,7 +64,7 @@ parseError :: [Token] -> a
 parseError [] = error "Unknown Parse Error" 
 parseError (t:ts) = error ("Parse error at line:column " ++ (tokenPosn t))
 
-data Type = TyBool | TyInt
+data Type = TyBool Bool  | TyInt Int | TyString String
 
 data Exp = Let String Exp Exp 
         | Plus Exp Exp 

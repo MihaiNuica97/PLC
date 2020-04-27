@@ -17,10 +17,11 @@ eval (x:xs) stack = do
 evalExpr :: Exp -> Stack -> IO Stack
 -- output to console
 evalExpr (Print exp) stack = do 
-    print (printVal exp)
+    putStrLn (printVal exp)
     return stack
 
 
 printVal :: Exp -> String
 printVal (Bool b) = show b
 printVal (Int i) = show i
+printVal (String s) = s
