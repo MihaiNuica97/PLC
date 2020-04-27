@@ -2,3 +2,10 @@ SPLGrammar.hs
 SPLTokens.hs
 Grammar.y
 Tokens.x
+Main.exe
+Main.o
+SPLEval.o
+SPLGrammar.o
+SPLTokens.o
+SPLGrammar.hi
+SPLTokens.hi
