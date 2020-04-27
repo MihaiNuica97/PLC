@@ -15,20 +15,20 @@ main = catch main' noParse
 main' = do (fileName : _ ) <- getArgs 
            sourceText <- readFile fileName
            putStrLn ("Parsing from file : " ++ fileName ++ "\n" ++ sourceText)
-           -- reads a file, converts a single vertical stream to a list of ints
+           let tokens = alexScanTokens sourceText
+           putStrLn ("Tokens : " ++ (show tokens))
+           let parsedProg = parseCalc tokens
+           putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
+           eval parsedProg []
+
+           {-- reads a file, converts a single vertical stream to a list of ints
            let ints = convertToMatrix (lines sourceText)
            putStrLn ("Showing vertical stream as int list" ++ (show ints))
            
            --tranposes matrix e.g [[row1], [row2]...] -> [[col1], [col2]...]
            let streams = transpose (ints)
            putStrLn ("Tranposing matrix to represent streams " ++ (show streams))
-
-           --Mihai's
-           let tokens = alexScanTokens sourceText
-           putStrLn ("Tokens : " ++ (show tokens))
-           let parsedProg = parseCalc tokens
-           putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
-           eval parsedProg []
+          -}
         
 noParse :: ErrorCall -> IO ([Map])
 noParse e = do let err =  show e
