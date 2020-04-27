@@ -7,25 +7,39 @@ import SPLTokens
 %tokentype { Token } 
 %error { parseError }
 %token 
-    let { TokenLet _ } 
-    in  { TokenIn _ } 
-    int { TokenInt _ $$ } 
-    var { TokenVar _ $$ }
-    '=' { TokenEq _ } 
-    '+' { TokenPlus _ } 
-    '-' { TokenMinus _ } 
-    '*' { TokenTimes _ } 
-    '/' { TokenDiv _ } 
-    '(' { TokenLParen _ } 
-    ')' { TokenRParen _ } 
+    nl      { TokenNewLine _}
+    let     { TokenLet _ } 
+    in      { TokenIn _ } 
+    int     { TokenInt _ $$ }
+    true   { TokenBool _ $$}
+    false  { TokenBool _ $$}
+    string {TokenString _ $$}
+    var     { TokenVar _ $$ }
+    '='     { TokenEq _ } 
+    '+'     { TokenPlus _ } 
+    '-'     { TokenMinus _ } 
+    '*'     { TokenTimes _ } 
+    '/'     { TokenDiv _ } 
+    '('     { TokenLParen _ } 
+    ')'     { TokenRParen _ } 
+    print  { TokenPrint _}
 
     %right in
     %left '+' '-' 
     %left '*' '/' 
     %left '^'
     %left NEG 
+    %left nl
+    %nonassoc int string true false var '(' ')'
+    %nonassoc print
 %% 
 
+
+
+Exps : Exps nl Exp      { $3 : $1 }
+      | Exps nl         { $1 }
+      | Exp            { [$1] }
+      | {- empty -}		{ [] }
 
 Exp :: {Exp}
 Exp :  let var '=' Exp in Exp { Let $2 $4 $6 } 
@@ -36,7 +50,13 @@ Exp :  let var '=' Exp in Exp { Let $2 $4 $6 }
     | '(' Exp ')'            { $2 } 
     | '-' Exp %prec NEG      { Negate $2 }
     | int                    { Int $1 } 
-    | var                    { Var $1 } 
+    | true                   { Bool $1}
+    | false                  { Bool $1} 
+    | string                 { String $1}
+    | var                    { Var $1 }
+    | print '('Exp')'              { Print $3 }
+
+
 
 { 
 
@@ -44,15 +64,19 @@ parseError :: [Token] -> a
 parseError [] = error "Unknown Parse Error" 
 parseError (t:ts) = error ("Parse error at line:column " ++ (tokenPosn t))
 
+data Type = TyBool Bool  | TyInt Int | TyString String
 
 data Exp = Let String Exp Exp 
-         | Plus Exp Exp 
-         | Minus Exp Exp 
-         | Times Exp Exp 
-         | Div Exp Exp 
-         | Expo Exp Exp
-         | Negate Exp
-         | Int Int 
-         | Var String 
+        | Plus Exp Exp 
+        | Minus Exp Exp 
+        | Times Exp Exp 
+        | Div Exp Exp 
+        | Expo Exp Exp
+        | Negate Exp
+        | Int Int 
+        | Bool Bool
+        | String String
+        | Var String 
+        |Print Exp
          deriving Show 
 }
