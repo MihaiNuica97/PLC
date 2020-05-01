@@ -1,0 +1,6 @@
+boolean = true;
+if (boolean = true) {
+    print(1);
+} else {
+    print(2);
+}

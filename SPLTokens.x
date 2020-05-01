@@ -67,6 +67,7 @@ tokenPosn (TokenIn  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 
 tokenPosn (TokenIf (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenElse (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenWhile (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 
 tokenPosn (TokenInt  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenString  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)

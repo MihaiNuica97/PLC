@@ -19,9 +19,6 @@ evalExpr (Print (Lookup exp)) stack = do
     putStrLn (printVar foundVar)  
     return stack
 
--- input from file
---evalExpr (readLine String
---)
 
 -- output to console
 evalExpr (Print exp) stack = do 
@@ -45,7 +42,20 @@ evalExpr (DeclareWithVal name val) stack = do
 evalExpr (Assign name value) stack = do 
     return (assignVar name value stack)
 
---IF THEN ELSE
+{- If Else statements
+evalExpr (IfElse e1 e2) stack = do
+    if e1 == True 
+        then (evalExpr e1 stack) 
+        else (evalExpr e2 stack)
+    return stack
+
+evalExpr (while e) stack = do
+    if e == True 
+        then (evalExpr e nextLine)
+        else (evalExpr e nextBlock)
+    return stack
+    -}
+
 
 
 -- Arithmetic Operators
@@ -60,25 +70,27 @@ evalExpr (Minus (Int v1) (Int v2)) stack = do
     return stack    
 
 evalExpr (Times (Int v1) (Int v2)) stack = do
-    let x = v1 * v2
+    let x = (v1 * v2)
+    putStrLn (show x)
     return stack
     
 evalExpr (Div (Int v1) (Int v2)) stack = do
-    let x = v1 `div` v2
+    let x = (v1 `div` v2)
+    putStrLn (show x)
     return stack   
     
 evalExpr (Expo (Int v1) (Int v2)) stack = do
     let x = v1^(v2)
+    putStrLn (show x)
     return stack   
     
 --special case
 evalExpr (Negate (Int v1)) stack = do
-    let x = -1 * v1
+    let x = (-1 * v1)
+    putStrLn (show x)
     return stack
     
 
-
---evalExpr (Plus e1 e2) stack = evalExpr (Plus (evalExpr e1 stack) (evalExpr e2 stack)) stack
    --printVal (Int v1)
     --return (stack)  
     

@@ -17,6 +17,7 @@ import SPLTokens
 
     if      { TokenIf _ }
     else    { TokenElse _ }
+    while   { TokenWhile _}
 
     '='     { TokenEq _ } 
     '+'     { TokenPlus _ } 
