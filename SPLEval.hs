@@ -29,6 +29,9 @@ evalExpr (Declare var) stack = do
     putStrLn ("Variable " ++ var ++ " declared")
     return (declareVar var stack)
 
+evalExpr (DeclareWithVal name (Lookup varName)) stack = 
+    evalExpr(DeclareWithVal name (getValExp (getVar varName stack))) stack
+
 evalExpr (DeclareWithVal name val) stack = do
     let stack' = declareVar name stack
     let stack'' = assignVar name val stack'
@@ -36,6 +39,9 @@ evalExpr (DeclareWithVal name val) stack = do
 
 -- Assigns new value to already declared variable
 -- Does not check if variable is already declared
+evalExpr (Assign name (Lookup varName)) stack = 
+    evalExpr (Assign name (getValExp (getVar varName stack))) stack
+
 evalExpr (Assign name value) stack = do 
     return (assignVar name value stack)
 
@@ -104,3 +110,8 @@ printVar (name, TyInt val) = show val
 printVar (name, TyBool val) = show val
 printVar (name, TyString val) = val
 
+-- returns the value of a variable as an Exp to feed it back into the main loop
+getValExp :: Map -> Exp
+getValExp (name, TyInt val) = Int val
+getValExp (name, TyBool val) = Bool val
+getValExp (name, TyString val) = String val 

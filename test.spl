@@ -1,5 +1,4 @@
 var macarena = 400;
-var plm = true;
-macarena = 2;
-plm = 42;
+var plm = 200;
+plm = macarena
 print(plm)
