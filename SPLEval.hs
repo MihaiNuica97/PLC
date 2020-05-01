@@ -5,17 +5,23 @@ type Map = (String, Type)
 type Stack = [Map]
 
 
-eval :: [Exp] -> Stack -> IO Stack
-eval [x] stack = evalExpr x stack
-eval (x:xs)  stack = do
+eval :: [Exp] -> [String] -> Stack -> IO Stack
+eval [] file stack = error "no instructions provided in spl file"
+eval expr [] stack = error "no contents in text file to work with"
+eval [x] file stack = evalExpr x stack
+eval (x:xs) file stack = do
     newStack <- evalExpr x stack
-    eval xs newStack
+    eval xs file newStack
 
 evalExpr :: Exp -> Stack -> IO Stack
 evalExpr (Print (Lookup exp)) stack = do 
     let foundVar = getVar exp stack
     putStrLn (printVar foundVar)  
     return stack
+
+-- input from file
+--evalExpr (readLine String
+--)
 
 -- output to console
 evalExpr (Print exp) stack = do 
@@ -38,6 +44,8 @@ evalExpr (DeclareWithVal name val) stack = do
 -- Does not check if variable is already declared
 evalExpr (Assign name value) stack = do 
     return (assignVar name value stack)
+
+--IF THEN ELSE
 
 
 -- Arithmetic Operators
@@ -66,15 +74,14 @@ evalExpr (Expo (Int v1) (Int v2)) stack = do
 --special case
 evalExpr (Negate (Int v1)) stack = do
     let x = -1 * v1
-    return stack   
-
+    return stack
+    
 
 
 --evalExpr (Plus e1 e2) stack = evalExpr (Plus (evalExpr e1 stack) (evalExpr e2 stack)) stack
    --printVal (Int v1)
     --return (stack)  
     
-
 
 --operations on expresses
 declareVar :: String -> Stack -> Stack

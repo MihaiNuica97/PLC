@@ -14,6 +14,10 @@ import SPLTokens
     string  { TokenString _ $$}
     var     { TokenVar _ }
     varName { TokenName _ $$ }
+
+    if      { TokenIf _ }
+    else    { TokenElse _ }
+
     '='     { TokenEq _ } 
     '+'     { TokenPlus _ } 
     '-'     { TokenMinus _ } 
@@ -23,6 +27,8 @@ import SPLTokens
     ')'     { TokenRParen _ } 
     print   { TokenPrint _}
 
+    %nonassoc if
+    %nonassoc else
     %left '+' '-' 
     %left '*' '/' 
     %left '^'
@@ -56,6 +62,7 @@ Exp : Exp '+' Exp            { Plus $1 $3 }
     | var varName            { Declare $2}
     | varName '=' Exp        { Assign $1 $3}
     | var varName '=' Exp    { DeclareWithVal $2 $4}
+    | if Exp else Exp        { IfElse $2 $4} 
 
 { 
 
@@ -65,7 +72,6 @@ parseError (t:ts) = error ("Parse error at line:column " ++ (tokenPosn t))
 
 data Type = TyBool Bool  | TyInt Int | TyString String | Empty
 
-
 data Exp = Let String Exp Exp 
         | Plus Exp Exp 
         | Minus Exp Exp 
@@ -73,6 +79,7 @@ data Exp = Let String Exp Exp
         | Div Exp Exp 
         | Expo Exp Exp
         | Negate Exp
+        | IfElse Exp Exp
         | Int Int 
         | Bool Bool
         | String String

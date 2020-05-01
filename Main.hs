@@ -20,7 +20,7 @@ main' = do (fileName : _ ) <- getArgs
            let parsedProg = reverse (parseCalc tokens)
            putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
         
-           --this is to accept file contents from stdin and 
+           --this is to accept file contents from stdin although use of read is non lazy!
            {- contents <- getContents 
            let ints = convertToMatrix (lines contents) --converts to a matrix
            putStrLn ("Loaded contents of text file as a matrix: " ++ (show ints))
@@ -29,9 +29,10 @@ main' = do (fileName : _ ) <- getArgs
            let streams = transpose (ints)
            putStrLn ("Tranposing matrix to represent vertical streams " ++ (show streams))
            -}
-           
-           --delivers matrix of streams to CEK machine
-           eval parsedProg []
+
+           contents <- getContents
+           --delivers a list of lines into CEK machine
+           eval parsedProg (lines contents) []
         
            --do something to spit out result
 
@@ -46,7 +47,7 @@ convertToMatrix :: [String] -> [[Int]]
 convertToMatrix [] = []
 convertToMatrix (x:xs) = (convertRow $ words x) : (convertToMatrix xs)
 
---converts a single line/row to a list of ints 
+--converts a single line/row to a list of ints USE OF READ IS NON LAZY
 convertRow :: [String] -> [Int]
 convertRow [] = []
 convertRow (x:xs) = [(read x :: Int)] ++ convertRow xs
