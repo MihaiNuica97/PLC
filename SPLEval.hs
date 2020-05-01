@@ -78,42 +78,44 @@ evalOp (Int x) = x
 
 
 
---evalExpr (Plus e1 e2) stack = evalExpr (Plus (evalExpr e1 stack) (evalExpr e2 stack)) stack
-   --printVal (Int v1)
-    --return (stack)  
-    
-
-
 --operations on expresses
 declareVar :: String -> Stack -> Stack
 declareVar name stack = (name, Empty):stack
 
+-- finds variable inside the stack and changes its value. Works with expressions
 assignVar :: String -> Exp -> Stack -> Stack
 assignVar name (Int value) stack = replaceVar (name,(TyInt value)) stack
 assignVar name (String value) stack = replaceVar (name,(TyString value)) stack
 assignVar name (Bool value) stack = replaceVar (name,(TyBool value)) stack
 
+-- takes a variable, replaces the value in the stack and returns changed stack.
+-- utility function for assignVar
 replaceVar :: Map -> Stack -> Stack
 replaceVar (name,value) ((mapName,mapValue):maps)
     | name == mapName = ((mapName,value):(replaceVar (name,value) maps))
     | otherwise = ((mapName,mapValue):(replaceVar (name,value) maps))
 replaceVar map [] = []
 
+-- Finds variable inside the stack by given name
 getVar :: String -> Stack -> Map
 getVar name stack = head(filter ((==name).fst) stack) 
 
-printVal :: Exp -> String
-printVal (Bool b) = show b
-printVal (Int i) = show i
-printVal (String s) = s
-
-printVar :: Map -> String
-printVar (name, TyInt val) = show val
-printVar (name, TyBool val) = show val
-printVar (name, TyString val) = val
 
 -- returns the value of a variable as an Exp to feed it back into the main loop
 getValExp :: Map -> Exp
 getValExp (name, TyInt val) = Int val
 getValExp (name, TyBool val) = Bool val
 getValExp (name, TyString val) = String val 
+
+
+-- returns value stored in a variable as a String 
+printVar :: Map -> String
+printVar (name, TyInt val) = show val
+printVar (name, TyBool val) = show val
+printVar (name, TyString val) = val
+
+-- returns free value as a String
+printVal :: Exp -> String
+printVal (Bool b) = show b
+printVal (Int i) = show i
+printVal (String s) = s
