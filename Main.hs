@@ -18,23 +18,23 @@ main' = do (fileName : _ ) <- getArgs
            let tokens = alexScanTokens sourceText
            putStrLn ("Tokens : " ++ (show tokens))
            let parsedProg = reverse (parseCalc tokens)
-
            putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
-           
         
-           contents <- getContents --this is to accept file contents from stdin
-           let ints = convertToMatrix (lines contents)
+           --this is to accept file contents from stdin and 
+           {- contents <- getContents 
+           let ints = convertToMatrix (lines contents) --converts to a matrix
            putStrLn ("Loaded contents of text file as a matrix: " ++ (show ints))
            
            --tranposes matrix e.g [[row1], [row2]...] -> [[col1], [col2]...]
            let streams = transpose (ints)
            putStrLn ("Tranposing matrix to represent vertical streams " ++ (show streams))
+           -}
            
+           --delivers matrix of streams to CEK machine
            eval parsedProg []
-           --let result = eval...
+        
+           --do something to spit out result
 
-
-    
         
 noParse :: ErrorCall -> IO ([Map])
 noParse e = do let err =  show e
