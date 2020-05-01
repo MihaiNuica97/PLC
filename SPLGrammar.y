@@ -26,7 +26,6 @@ import SPLTokens
     %left '+' '-' 
     %left '*' '/' 
     %left '^'
-    %left NEG 
     %left nl
     %right var
     %nonassoc int string true false var '(' ')'
@@ -46,8 +45,8 @@ Exp : Exp '+' Exp            { Plus $1 $3 }
     | Exp '*' Exp            { Times $1 $3 } 
     | Exp '/' Exp            { Div $1 $3 } 
     | '(' Exp ')'            { $2 } 
-    | '-' Exp %prec NEG      { Negate $2 }
-    | int                    { Int $1 } 
+    | int                    { Int $1 }
+    | int int                { Plus (Int $1) (Int $2)}
     | true                   { Bool $1}
     | false                  { Bool $1} 
     | string                 { String $1}
@@ -66,13 +65,13 @@ parseError (t:ts) = error ("Parse error at line:column " ++ (tokenPosn t))
 data Type = TyBool Bool  | TyInt Int | TyString String | Empty
 
 
+
 data Exp = Let String Exp Exp 
         | Plus Exp Exp 
         | Minus Exp Exp 
         | Times Exp Exp 
         | Div Exp Exp 
         | Expo Exp Exp
-        | Negate Exp
         | Int Int 
         | Bool Bool
         | String String

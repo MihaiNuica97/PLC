@@ -47,32 +47,34 @@ evalExpr (Assign name value) stack = do
 
 
 -- Arithmetic Operators
-evalExpr (Plus (Int v1) (Int v2)) stack = do
-    let x = (v1 + v2)
-    putStrLn (show x)
+evalExpr (Plus x1 x2) stack = do
+    let result = evalOp(Plus x1 x2)
+    putStrLn (show result)
     return stack
 
-evalExpr (Minus (Int v1) (Int v2)) stack = do
-    let x = (v1 - v2)
-    putStrLn (show x)
+evalExpr (Minus x1 x2) stack = do
+    let result = evalOp(Minus x1 x2)
+    putStrLn (show result)
     return stack    
 
-evalExpr (Times (Int v1) (Int v2)) stack = do
-    let x = v1 * v2
+evalExpr (Times x1 x2) stack = do
+    let result = evalOp(Times x1 x2)
+    putStrLn (show result)
     return stack
     
-evalExpr (Div (Int v1) (Int v2)) stack = do
-    let x = v1 `div` v2
-    return stack   
+evalExpr (Div x1 x2) stack = do
+    let result = evalOp(Div x1 x2)
+    putStrLn (show result)
+    return stack  
+
     
-evalExpr (Expo (Int v1) (Int v2)) stack = do
-    let x = v1^(v2)
-    return stack   
-    
---special case
-evalExpr (Negate (Int v1)) stack = do
-    let x = -1 * v1
-    return stack   
+
+evalOp :: Exp -> Int
+evalOp (Plus x1 x2) = (evalOp x1) + (evalOp x2)
+evalOp (Minus x1 x2) = (evalOp x1) - (evalOp x2)
+evalOp (Times x1 x2) = (evalOp x1) * (evalOp x2)
+evalOp (Div x1 x2) = div (evalOp x1) (evalOp x2)
+evalOp (Int x) = x
 
 
 
