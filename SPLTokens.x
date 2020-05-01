@@ -14,10 +14,9 @@ tokens :-
   $white+       ; 
   "--".*      ;
   [\n \;]+                        { tok (\p s -> TokenNewLine p)}
-  $digit+                         { tok (\p s -> TokenInt p (read s)) }
+  [\-]?$digit+                         { tok (\p s -> TokenInt p (read s)) }
   $quote .* $quote                { tok (\p s -> TokenString p (tail (init s))) }
-  let                             { tok (\p s -> TokenLet p)} 
-  in                              { tok (\p s -> TokenIn p) }
+  var                             {tok (\p s -> TokenVar p)}
   (t|T)rue                        { tok (\p s -> TokenBool p True)  }
   (f|F)alse                       { tok (\p s -> TokenBool p False) }
   \=                              { tok (\p s -> TokenEq p) }
@@ -28,7 +27,7 @@ tokens :-
   \(                              { tok (\p s -> TokenLParen p) }
   \)                              { tok (\p s -> TokenRParen p) }
   print                           { tok (\p s -> TokenPrint p)}  
-  $alpha [$alpha $digit \_ \’]*   { tok (\p s -> TokenVar p s) }
+  $alpha [$alpha $digit \_ \’]*   { tok (\p s -> TokenName p s) }
 
 {
 -- need to add tokens to control stream processing
@@ -42,7 +41,8 @@ data Token =
   TokenInt AlexPosn Int        |
   TokenString AlexPosn String  |
   TokenBool AlexPosn Bool      |
-  TokenVar AlexPosn String     |
+  TokenVar  AlexPosn           |
+  TokenName AlexPosn String    |
   TokenEq  AlexPosn            |
   TokenPlus AlexPosn           |
   TokenMinus AlexPosn          |
@@ -61,7 +61,8 @@ tokenPosn (TokenIn  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenInt  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenString  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenBool  (AlexPn a l c) b) = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenVar (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenVar (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenName  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenEq  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenPlus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenMinus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)

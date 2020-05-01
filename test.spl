@@ -1,1 +1,6 @@
-print("abc")
+var macarena = 400;
+var plm = true;
+macarena = -1;
+plm = 42;
+print(macarena);
+print(plm)
