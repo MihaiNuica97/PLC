@@ -1,5 +1,1 @@
-var macarena = 400;
-var plm = true;
-macarena = 2;
-plm = 42;
-print(plm)
+1 + (2 - 3) * 4;

@@ -32,6 +32,9 @@ evalExpr (Declare var) stack = do
     putStrLn ("Variable " ++ var ++ " declared")
     return (declareVar var stack)
 
+evalExpr (DeclareWithVal name (Lookup varName)) stack = 
+    evalExpr(DeclareWithVal name (getValExp (getVar varName stack))) stack
+
 evalExpr (DeclareWithVal name val) stack = do
     let stack' = declareVar name stack
     let stack'' = assignVar name val stack'
@@ -39,6 +42,9 @@ evalExpr (DeclareWithVal name val) stack = do
 
 -- Assigns new value to already declared variable
 -- Does not check if variable is already declared
+evalExpr (Assign name (Lookup varName)) stack = 
+    evalExpr (Assign name (getValExp (getVar varName stack))) stack
+
 evalExpr (Assign name value) stack = do 
     return (assignVar name value stack)
 
@@ -59,67 +65,74 @@ evalExpr (while e) stack = do
 
 
 -- Arithmetic Operators
-evalExpr (Plus (Int v1) (Int v2)) stack = do
-    let x = (v1 + v2)
-    putStrLn (show x)
+evalExpr (Plus x1 x2) stack = do
+    let result = evalOp(Plus x1 x2)
+    putStrLn (show result)
     return stack
 
-evalExpr (Minus (Int v1) (Int v2)) stack = do
-    let x = (v1 - v2)
-    putStrLn (show x)
+evalExpr (Minus x1 x2) stack = do
+    let result = evalOp(Minus x1 x2)
+    putStrLn (show result)
     return stack    
 
-evalExpr (Times (Int v1) (Int v2)) stack = do
-    let x = (v1 * v2)
-    putStrLn (show x)
+evalExpr (Times x1 x2) stack = do
+    let result = evalOp(Times x1 x2)
+    putStrLn (show result)
     return stack
     
-evalExpr (Div (Int v1) (Int v2)) stack = do
-    let x = (v1 `div` v2)
-    putStrLn (show x)
-    return stack   
-    
-evalExpr (Expo (Int v1) (Int v2)) stack = do
-    let x = v1^(v2)
-    putStrLn (show x)
-    return stack   
-    
---special case
-evalExpr (Negate (Int v1)) stack = do
-    let x = (-1 * v1)
-    putStrLn (show x)
-    return stack
+evalExpr (Div x1 x2) stack = do
+    let result = evalOp(Div x1 x2)
+    putStrLn (show result)
+    return stack  
+
     
 
-   --printVal (Int v1)
-    --return (stack)  
-    
+evalOp :: Exp -> Int
+evalOp (Plus x1 x2) = (evalOp x1) + (evalOp x2)
+evalOp (Minus x1 x2) = (evalOp x1) - (evalOp x2)
+evalOp (Times x1 x2) = (evalOp x1) * (evalOp x2)
+evalOp (Div x1 x2) = div (evalOp x1) (evalOp x2)
+evalOp (Int x) = x
+
 
 --operations on expresses
 declareVar :: String -> Stack -> Stack
 declareVar name stack = (name, Empty):stack
 
+-- finds variable inside the stack and changes its value. Works with expressions
 assignVar :: String -> Exp -> Stack -> Stack
 assignVar name (Int value) stack = replaceVar (name,(TyInt value)) stack
 assignVar name (String value) stack = replaceVar (name,(TyString value)) stack
 assignVar name (Bool value) stack = replaceVar (name,(TyBool value)) stack
 
+-- takes a variable, replaces the value in the stack and returns changed stack.
+-- utility function for assignVar
 replaceVar :: Map -> Stack -> Stack
 replaceVar (name,value) ((mapName,mapValue):maps)
     | name == mapName = ((mapName,value):(replaceVar (name,value) maps))
     | otherwise = ((mapName,mapValue):(replaceVar (name,value) maps))
 replaceVar map [] = []
 
+-- Finds variable inside the stack by given name
 getVar :: String -> Stack -> Map
 getVar name stack = head(filter ((==name).fst) stack) 
 
-printVal :: Exp -> String
-printVal (Bool b) = show b
-printVal (Int i) = show i
-printVal (String s) = s
 
+-- returns the value of a variable as an Exp to feed it back into the main loop
+getValExp :: Map -> Exp
+getValExp (name, TyInt val) = Int val
+getValExp (name, TyBool val) = Bool val
+getValExp (name, TyString val) = String val 
+
+
+-- returns value stored in a variable as a String 
 printVar :: Map -> String
 printVar (name, TyInt val) = show val
 printVar (name, TyBool val) = show val
 printVar (name, TyString val) = val
 
+-- returns free value as a String
+printVal :: Exp -> String
+printVal (Bool b) = show b
+printVal (Int i) = show i
+printVal (String s) = s

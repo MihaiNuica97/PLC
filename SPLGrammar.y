@@ -33,7 +33,6 @@ import SPLTokens
     %left '+' '-' 
     %left '*' '/' 
     %left '^'
-    %left NEG 
     %left nl
     %right var
     %nonassoc int string true false var '(' ')'
@@ -53,8 +52,8 @@ Exp : Exp '+' Exp            { Plus $1 $3 }
     | Exp '*' Exp            { Times $1 $3 } 
     | Exp '/' Exp            { Div $1 $3 } 
     | '(' Exp ')'            { $2 } 
-    | '-' Exp %prec NEG      { Negate $2 }
-    | int                    { Int $1 } 
+    | int                    { Int $1 }
+    | int int                { Plus (Int $1) (Int $2)}
     | true                   { Bool $1}
     | false                  { Bool $1} 
     | string                 { String $1}
