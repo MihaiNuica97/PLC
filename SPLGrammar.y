@@ -9,9 +9,9 @@ import SPLTokens
 %token 
     nl      { TokenNewLine _}
     int     { TokenInt _ $$ }
-    true   { TokenBool _ $$}
-    false  { TokenBool _ $$}
-    string {TokenString _ $$}
+    true    { TokenBool _ $$}
+    false   { TokenBool _ $$}
+    string  { TokenString _ $$}
     var     { TokenVar _ }
     varName { TokenName _ $$ }
     '='     { TokenEq _ } 
@@ -21,7 +21,7 @@ import SPLTokens
     '/'     { TokenDiv _ } 
     '('     { TokenLParen _ } 
     ')'     { TokenRParen _ } 
-    print  { TokenPrint _}
+    print   { TokenPrint _}
 
     %left '+' '-' 
     %left '*' '/' 
@@ -37,11 +37,11 @@ import SPLTokens
 
 Exps : Exps nl Exp      { $3 : $1 }
       | Exps nl         { $1 }
-      | Exp            { [$1] }
+      | Exp             { [$1] }
       | {- empty -}		{ [] }
 
 Exp :: {Exp}
-Exp : Exp '+' Exp           { Plus $1 $3 } 
+Exp : Exp '+' Exp            { Plus $1 $3 } 
     | Exp '-' Exp            { Minus $1 $3 } 
     | Exp '*' Exp            { Times $1 $3 } 
     | Exp '/' Exp            { Div $1 $3 } 
@@ -56,8 +56,6 @@ Exp : Exp '+' Exp           { Plus $1 $3 }
     | var varName            { Declare $2}
     | varName '=' Exp        { Assign $1 $3}
     | var varName '=' Exp    { DeclareWithVal $2 $4}
-
-
 
 { 
 
