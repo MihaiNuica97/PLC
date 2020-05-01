@@ -315,7 +315,7 @@ happyReduction_9 _ _ _  = notHappyAtAll
 happyReduce_10 = happySpecReduce_1  5 happyReduction_10
 happyReduction_10 (HappyTerminal (TokenInt _ happy_var_1))
 	 =  HappyAbsSyn5
-		 (Int happy_var_1
+		 (Type(Int happy_var_1)
 	)
 happyReduction_10 _  = notHappyAtAll 
 
@@ -323,28 +323,28 @@ happyReduce_11 = happySpecReduce_2  5 happyReduction_11
 happyReduction_11 (HappyTerminal (TokenInt _ happy_var_2))
 	(HappyTerminal (TokenInt _ happy_var_1))
 	 =  HappyAbsSyn5
-		 (Plus (Int happy_var_1) (Int happy_var_2)
+		 (Plus (Type (Int happy_var_1)) (Type (Int happy_var_2))
 	)
 happyReduction_11 _ _  = notHappyAtAll 
 
 happyReduce_12 = happySpecReduce_1  5 happyReduction_12
 happyReduction_12 (HappyTerminal (TokenBool _ happy_var_1))
 	 =  HappyAbsSyn5
-		 (Bool happy_var_1
+		 (Type (Bool happy_var_1)
 	)
 happyReduction_12 _  = notHappyAtAll 
 
 happyReduce_13 = happySpecReduce_1  5 happyReduction_13
 happyReduction_13 (HappyTerminal (TokenBool _ happy_var_1))
 	 =  HappyAbsSyn5
-		 (Bool happy_var_1
+		 (Type (Bool happy_var_1)
 	)
 happyReduction_13 _  = notHappyAtAll 
 
 happyReduce_14 = happySpecReduce_1  5 happyReduction_14
 happyReduction_14 (HappyTerminal (TokenString _ happy_var_1))
 	 =  HappyAbsSyn5
-		 (String happy_var_1
+		 (Type (String happy_var_1)
 	)
 happyReduction_14 _  = notHappyAtAll 
 
@@ -452,7 +452,8 @@ parseError :: [Token] -> a
 parseError [] = error "Unknown Parse Error" 
 parseError (t:ts) = error ("Parse error at line:column " ++ (tokenPosn t))
 
-data Type = TyBool Bool  | TyInt Int | TyString String | Empty
+data Type = Bool Bool  | Int Int | String String | Empty
+    deriving (Eq, Show)
 
 
 
@@ -462,14 +463,11 @@ data Exp = Let String Exp Exp
         | Times Exp Exp 
         | Div Exp Exp 
         | Expo Exp Exp
-        | Int Int 
-        | Bool Bool
-        | String String
         | Declare String 
         | DeclareWithVal String Exp
         | Assign String Exp
         | Print Exp
-        | Type
+        | Type Type
         | Lookup String
          deriving Show
 {-# LINE 1 "templates/GenericTemplate.hs" #-}

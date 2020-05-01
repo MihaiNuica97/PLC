@@ -30,9 +30,9 @@ evalExpr (Declare var) stack = do
     return (declareVar var stack)
 
 evalExpr (DeclareWithVal name (Lookup varName)) stack = 
-    evalExpr(DeclareWithVal name (getValExp (getVar varName stack))) stack
+    evalExpr(DeclareWithVal name (Type (snd (getVar varName stack)))) stack
 
-evalExpr (DeclareWithVal name val) stack = do
+evalExpr (DeclareWithVal name (Type val)) stack = do
     let stack' = declareVar name stack
     let stack'' = assignVar name val stack'
     return stack''
@@ -40,9 +40,9 @@ evalExpr (DeclareWithVal name val) stack = do
 -- Assigns new value to already declared variable
 -- Does not check if variable is already declared
 evalExpr (Assign name (Lookup varName)) stack = 
-    evalExpr (Assign name (getValExp (getVar varName stack))) stack
+    evalExpr (Assign name (Type (snd (getVar varName stack)))) stack
 
-evalExpr (Assign name value) stack = do 
+evalExpr (Assign name (Type value)) stack = do 
     return (assignVar name value stack)
 
 
@@ -74,7 +74,7 @@ evalOp (Plus x1 x2) = (evalOp x1) + (evalOp x2)
 evalOp (Minus x1 x2) = (evalOp x1) - (evalOp x2)
 evalOp (Times x1 x2) = (evalOp x1) * (evalOp x2)
 evalOp (Div x1 x2) = div (evalOp x1) (evalOp x2)
-evalOp (Int x) = x
+evalOp (Type (Int x)) = x
 
 
 
@@ -83,10 +83,10 @@ declareVar :: String -> Stack -> Stack
 declareVar name stack = (name, Empty):stack
 
 -- finds variable inside the stack and changes its value. Works with expressions
-assignVar :: String -> Exp -> Stack -> Stack
-assignVar name (Int value) stack = replaceVar (name,(TyInt value)) stack
-assignVar name (String value) stack = replaceVar (name,(TyString value)) stack
-assignVar name (Bool value) stack = replaceVar (name,(TyBool value)) stack
+assignVar :: String -> Type -> Stack -> Stack
+assignVar name (Int value) stack = replaceVar (name,(Int value)) stack
+assignVar name (String value) stack = replaceVar (name,(String value)) stack
+assignVar name (Bool value) stack = replaceVar (name,(Bool value)) stack
 
 -- takes a variable, replaces the value in the stack and returns changed stack.
 -- utility function for assignVar
@@ -101,21 +101,17 @@ getVar :: String -> Stack -> Map
 getVar name stack = head(filter ((==name).fst) stack) 
 
 
--- returns the value of a variable as an Exp to feed it back into the main loop
-getValExp :: Map -> Exp
-getValExp (name, TyInt val) = Int val
-getValExp (name, TyBool val) = Bool val
-getValExp (name, TyString val) = String val 
 
 
 -- returns value stored in a variable as a String 
 printVar :: Map -> String
-printVar (name, TyInt val) = show val
-printVar (name, TyBool val) = show val
-printVar (name, TyString val) = val
+printVar (name, String val) = val
+printVar (name, Int val) = show val
+printVar (name, Bool val) = show val
+printVar (name, Empty) = "Null Value"
 
 -- returns free value as a String
 printVal :: Exp -> String
-printVal (Bool b) = show b
-printVal (Int i) = show i
-printVal (String s) = s
+printVal (Type (Bool b)) = show b
+printVal (Type (Int i)) = show i
+printVal (Type (String s)) = s

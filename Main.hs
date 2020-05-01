@@ -19,7 +19,7 @@ main' = do (fileName : _ ) <- getArgs
            putStrLn ("Tokens : " ++ (show tokens))
            let parsedProg = reverse (parseCalc tokens)
            putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
-        
+
            --this is to accept file contents from stdin and 
            {- contents <- getContents 
            let ints = convertToMatrix (lines contents) --converts to a matrix

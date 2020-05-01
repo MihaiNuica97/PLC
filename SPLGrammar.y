@@ -39,17 +39,18 @@ Exps : Exps nl Exp      { $3 : $1 }
       | Exp             { [$1] }
       | {- empty -}		{ [] }
 
+
 Exp :: {Exp}
 Exp : Exp '+' Exp            { Plus $1 $3 } 
     | Exp '-' Exp            { Minus $1 $3 } 
     | Exp '*' Exp            { Times $1 $3 } 
     | Exp '/' Exp            { Div $1 $3 } 
     | '(' Exp ')'            { $2 } 
-    | int                    { Int $1 }
-    | int int                { Plus (Int $1) (Int $2)}
-    | true                   { Bool $1}
-    | false                  { Bool $1} 
-    | string                 { String $1}
+    | int                    { Type(Int $1) }
+    | int int                { Plus (Type (Int $1)) (Type (Int $2))}
+    | true                   { Type (Bool $1)}
+    | false                  { Type (Bool $1)} 
+    | string                 { Type (String $1)}
     | print '('Exp')'        { Print $3 }
     | varName                { Lookup $1 }
     | var varName            { Declare $2}
@@ -62,7 +63,8 @@ parseError :: [Token] -> a
 parseError [] = error "Unknown Parse Error" 
 parseError (t:ts) = error ("Parse error at line:column " ++ (tokenPosn t))
 
-data Type = TyBool Bool  | TyInt Int | TyString String | Empty
+data Type = Bool Bool  | Int Int | String String | Empty
+    deriving (Eq, Show)
 
 
 
@@ -72,14 +74,11 @@ data Exp = Let String Exp Exp
         | Times Exp Exp 
         | Div Exp Exp 
         | Expo Exp Exp
-        | Int Int 
-        | Bool Bool
-        | String String
         | Declare String 
         | DeclareWithVal String Exp
         | Assign String Exp
         | Print Exp
-        | Type
+        | Type Type
         | Lookup String
          deriving Show 
 }
