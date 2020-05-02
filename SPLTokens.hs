@@ -543,6 +543,7 @@ alex_base = listArray (0 :: Int, 60)
   , 1998
   , 2073
   , 2160
+  , -38
   , 0
   , 0
   , 1131
@@ -600,7 +601,7 @@ alex_table = listArray (0 :: Int, 4272)
   , 26
   , 26
   , 26
-  , 0
+  , 32
   , 23
   , 0
   , 18
@@ -609,14 +610,14 @@ alex_table = listArray (0 :: Int, 4272)
   , 0
   , 0
   , 23
-  , 36
   , 37
-  , 34
-  , 32
-  , 25
-  , 33
-  , 0
+  , 38
   , 35
+  , 33
+  , 25
+  , 34
+  , 0
+  , 36
   , 26
   , 26
   , 26
@@ -2711,6 +2712,32 @@ alex_table = listArray (0 :: Int, 4272)
   , 0
   , 0
   , 0
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
   , 0
   , 0
   , 0
@@ -2742,6 +2769,42 @@ alex_table = listArray (0 :: Int, 4272)
   , 51
   , 51
   , 0
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
   , 0
   , 0
   , 0
@@ -2776,9 +2839,64 @@ alex_table = listArray (0 :: Int, 4272)
   , 0
   , 0
   , 0
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
   , 0
   , 0
   , 0
+  , 0
+  , 47
+  , 0
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
   , 0
   , 0
   , 0
@@ -2936,6 +3054,32 @@ alex_table = listArray (0 :: Int, 4272)
   , 51
   , 51
   , 0
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
+  , 47
   , 0
   , 0
   , 0
@@ -4877,7 +5021,7 @@ alex_check = listArray (0 :: Int, 4272)
   , 55
   , 56
   , 57
-  , -1
+  , 61
   , 32
   , -1
   , 34
@@ -9313,6 +9457,7 @@ data Token =
   TokenVar  AlexPosn           |
   TokenName AlexPosn String    |
   TokenEq  AlexPosn            |
+  TokenIsEq AlexPosn           |
   TokenPlus AlexPosn           |
   TokenMinus AlexPosn          |
   TokenTimes AlexPosn          |
@@ -9334,6 +9479,7 @@ tokenPosn (TokenBool  (AlexPn a l c) b) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenVar (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenName  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenEq  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenIsEq  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenPlus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenMinus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenTimes  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
@@ -9343,6 +9489,7 @@ tokenPosn (TokenRParen (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenPrint (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenNewLine (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenReadLine (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+
 
 alex_action_2 =  tok (\p s -> TokenNewLine p)
 alex_action_3 =  tok (\p s -> TokenInt p (read s)) 

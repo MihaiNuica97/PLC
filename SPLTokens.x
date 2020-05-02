@@ -19,7 +19,8 @@ tokens :-
   var                             { tok (\p s -> TokenVar p)}
   (t|T)rue                        { tok (\p s -> TokenBool p True)  }
   (f|F)alse                       { tok (\p s -> TokenBool p False) }
-  \=                              { tok (\p s -> TokenEq p) }
+  \=                              { tok (\p s -> TokenEq p)}
+  \==                             { tok (\p s -> TokenIsEq p)}
   \+                              { tok (\p s -> TokenPlus p) }
   \-                              { tok (\p s -> TokenMinus p) }
   \*                              { tok (\p s -> TokenTimes p) }
@@ -45,6 +46,7 @@ data Token =
   TokenVar  AlexPosn           |
   TokenName AlexPosn String    |
   TokenEq  AlexPosn            |
+  TokenIsEq AlexPosn           |
   TokenPlus AlexPosn           |
   TokenMinus AlexPosn          |
   TokenTimes AlexPosn          |
@@ -66,6 +68,7 @@ tokenPosn (TokenBool  (AlexPn a l c) b) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenVar (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenName  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenEq  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenIsEq  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenPlus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenMinus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenTimes  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
