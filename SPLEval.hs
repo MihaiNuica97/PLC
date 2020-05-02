@@ -5,20 +5,17 @@ type Map = (String, Type)
 type Stack = [Map]
 
 
-eval :: [Exp] -> [String] -> Stack -> IO Stack
-eval [] file stack = error "no instructions provided in spl file"
-eval expr [] stack = error "no contents in text file to work with"
-eval [x] file stack = evalExpr x stack
-eval (x:xs) file stack = do
+eval :: [Exp] -> Stack -> IO Stack
+eval [x] stack = evalExpr x stack
+eval (x:xs)  stack = do
     newStack <- evalExpr x stack
-    eval xs file newStack
+    eval xs newStack
 
 evalExpr :: Exp -> Stack -> IO Stack
 evalExpr (Print (Lookup exp)) stack = do 
     let foundVar = getVar exp stack
     putStrLn (printVar foundVar)  
     return stack
-
 
 -- output to console
 evalExpr (Print (Type exp)) stack = do 
@@ -34,7 +31,8 @@ evalExpr (Print exp) stack = do
 -- Does not check if variable is already declared
 evalExpr (Declare var) stack = do
     putStrLn ("Variable " ++ var ++ " declared")
-    return (declareVar var stack)
+    return stack
+
 
 -- Declare with value of an already existing variable
 evalExpr (DeclareWithVal name (Lookup varName)) stack = 
@@ -60,26 +58,24 @@ evalExpr (Assign name (Lookup varName)) stack =
 evalExpr (Assign name (Type value)) stack = do 
     return (assignVar name value stack)
 
-{- If Else statements
-evalExpr (IfElse e1 e2) stack = do
-    if e1 == True 
-        then (evalExpr e1 stack) 
-        else (evalExpr e2 stack)
-    return stack
-
-evalExpr (while e) stack = do
-    if e == True 
-        then (evalExpr e nextLine)
-        else (evalExpr e nextBlock)
-    return stack
-    -}
-
-
 -- Assign with result of an operation
 evalExpr (Assign name exp) stack = 
     evalExpr (Assign name (Type (evalTerminalExpr (exp,stack)))) stack
 
+-- Declare with result of readLine
+evalExpr (DeclareWithReadLine name) stack = do
+    contents <- getLine
+    putStrLn("Contents: " ++ contents)
+    --let result =  [(read contents :: Int)] 
+    --let stack' = declareVar name stack
+    --let stack'' = assignVar name result stack'
+    return stack
 
+--readLine; <-- for a single line input
+evalExpr (readLine) stack = do
+    line <- getLine
+    putStrLn("line read" + line)
+    return stack
 
 
 -- General Operations
@@ -117,8 +113,6 @@ replaceVar map [] = []
 -- Finds variable inside the stack by given name
 getVar :: String -> Stack -> Map
 getVar name stack = head(filter ((==name).fst) stack) 
-
-
 
 
 -- returns value stored in a variable as a String 
