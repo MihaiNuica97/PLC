@@ -19,9 +19,6 @@ tokens :-
   var                             { tok (\p s -> TokenVar p)}
   (t|T)rue                        { tok (\p s -> TokenBool p True)  }
   (f|F)alse                       { tok (\p s -> TokenBool p False) }
-  if                              { tok (\p s -> TokenIf p) }
-  else                            { tok (\p s -> TokenElse p) }
-  while                           { tok (\p s -> TokenWhile p) }
   \=                              { tok (\p s -> TokenEq p) }
   \+                              { tok (\p s -> TokenPlus p) }
   \-                              { tok (\p s -> TokenMinus p) }
@@ -29,7 +26,8 @@ tokens :-
   \/                              { tok (\p s -> TokenDiv p) }
   \(                              { tok (\p s -> TokenLParen p) }
   \)                              { tok (\p s -> TokenRParen p) }
-  print                           { tok (\p s -> TokenPrint p)}  
+  print                           { tok (\p s -> TokenPrint p)} 
+  readLine                        { tok (\p s -> TokenReadLine p)}  
   $alpha [$alpha $digit \_ \’]*   { tok (\p s -> TokenName p s) }
 
 {
@@ -43,9 +41,6 @@ data Token =
   TokenIn  AlexPosn            | 
   TokenInt AlexPosn Int        |
   TokenString AlexPosn String  |
-  TokenIf AlexPosn             |
-  TokenElse AlexPosn           |
-  TokenWhile AlexPosn          |
   TokenBool AlexPosn Bool      |
   TokenVar  AlexPosn           |
   TokenName AlexPosn String    |
@@ -57,24 +52,19 @@ data Token =
   TokenLParen AlexPosn         |
   TokenRParen AlexPosn         |
   TokenNewLine AlexPosn        |
-  TokenPrint AlexPosn
+  TokenPrint AlexPosn          |
+  TokenReadLine AlexPosn
     deriving (Eq, Show)
 
 
 tokenPosn :: Token -> String
 tokenPosn (TokenLet (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenIn  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
-
-tokenPosn (TokenIf (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenElse (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenWhile (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
-
+tokenPosn (TokenIn  (AlexPn a l c)) = show(l) ++ ":" ++ show(c) 
 tokenPosn (TokenInt  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenString  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenBool  (AlexPn a l c) b) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenVar (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenName  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
-
 tokenPosn (TokenEq  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenPlus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenMinus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
@@ -83,6 +73,6 @@ tokenPosn (TokenDiv (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenLParen (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenRParen (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenPrint (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
-
 tokenPosn (TokenNewLine (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenReadLine (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 }

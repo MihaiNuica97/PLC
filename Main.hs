@@ -30,9 +30,9 @@ main' = do (fileName : _ ) <- getArgs
            putStrLn ("Tranposing matrix to represent vertical streams " ++ (show streams))
            -}
 
-           contents <- getContents
+           --contents <- getContents
            --delivers a list of lines into CEK machine
-           eval parsedProg (lines contents) []
+           eval parsedProg []
         
            --do something to spit out result
 

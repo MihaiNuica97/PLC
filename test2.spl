@@ -1,1 +1,3 @@
-readLine;
+var x = readLine;
+print(x);
+

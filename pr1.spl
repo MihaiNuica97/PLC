@@ -22,21 +22,20 @@ while(nextInput != null){
 Reece's alternative pseucode
 ----
 
-
-Array stream1;
-Array stream2;
-
+var stream1[];
+var stream2;[]
+var line[];
 line = readLine;
 
 while(line != null) {
-    int a = readInt(line, 0);
-    int b = readInt(line, 1);
+    int a = line[0]
+    int b = readInt(1);
     stream1.push(a);
     stream2.push(b);
 
     line = readLine;
-    int c = readInt(line, 0);
-    int d = readInt(line, 1)
+    int c = line[0];
+    int d = line[1];
     stream1.push(c);
     stream2.push(d);
 

@@ -1,5 +1,6 @@
 module SPLEval where
 import SPLGrammar
+import Data.Char (digitToInt)
 
 type Map = (String, Type)
 type Stack = [Map]
@@ -10,6 +11,9 @@ eval [x] stack = evalExpr x stack
 eval (x:xs)  stack = do
     newStack <- evalExpr x stack
     eval xs newStack
+
+
+
 
 evalExpr :: Exp -> Stack -> IO Stack
 evalExpr (Print (Lookup exp)) stack = do 
@@ -26,6 +30,7 @@ evalExpr (Print exp) stack = do
     putStrLn (printVal (evalTerminalExpr (exp,stack)))
     return stack
 
+    
 -- Declare empty variable
 -- If variable is declared without an initial value, it is marked with "Empty"
 -- Does not check if variable is already declared
@@ -33,15 +38,23 @@ evalExpr (Declare var) stack = do
     putStrLn ("Variable " ++ var ++ " declared")
     return stack
 
-
 -- Declare with value of an already existing variable
 evalExpr (DeclareWithVal name (Lookup varName)) stack = 
     evalExpr(DeclareWithVal name (Type (snd (getVar varName stack)))) stack
-
+    
 -- Declare with an absolute value
 evalExpr (DeclareWithVal name (Type val)) stack = do
     let stack' = declareVar name stack
     let stack'' = assignVar name val stack'
+    return stack''
+
+-- Declare with the result from reading a line from stdin    
+evalExpr (DeclareWithVal name ReadLine) stack = do
+    line <- getLine
+    let headVal = head (map digitToInt line) 
+    -- this line is just a temp solution to parse an Int (the first character of the line) to assignVar below
+    let stack' = declareVar name stack
+    let stack'' = assignVar name (Int headVal) stack'
     return stack''
 
 -- Declare with result of an operation
@@ -62,21 +75,11 @@ evalExpr (Assign name (Type value)) stack = do
 evalExpr (Assign name exp) stack = 
     evalExpr (Assign name (Type (evalTerminalExpr (exp,stack)))) stack
 
--- Declare with result of readLine
-evalExpr (DeclareWithReadLine name) stack = do
-    contents <- getLine
-    putStrLn("Contents: " ++ contents)
-    --let result =  [(read contents :: Int)] 
-    --let stack' = declareVar name stack
-    --let stack'' = assignVar name result stack'
-    return stack
-
---readLine; <-- for a single line input
+--Read and print out a single line e.g. readLine;
 evalExpr (readLine) stack = do
     line <- getLine
-    putStrLn("line read" + line)
+    putStrLn("line read" ++ line)
     return stack
-
 
 -- General Operations
 evalTerminalExpr:: (Exp,Stack) -> Type
@@ -113,6 +116,7 @@ replaceVar map [] = []
 -- Finds variable inside the stack by given name
 getVar :: String -> Stack -> Map
 getVar name stack = head(filter ((==name).fst) stack) 
+
 
 
 -- returns value stored in a variable as a String 
