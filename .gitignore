@@ -9,3 +9,4 @@ SPLGrammar.o
 SPLTokens.o
 SPLGrammar.hi
 SPLTokens.hi
+SPLEval.hi

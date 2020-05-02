@@ -54,7 +54,7 @@ data Token =
   TokenNull AlexPosn           |
 
   TokenRead AlexPosn           |
-  TokenWrite AlexPosn           |
+  TokenWrite AlexPosn          |
 
   TokenIf AlexPosn             |
   TokenElse AlexPosn           |

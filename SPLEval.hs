@@ -12,14 +12,26 @@ eval (x:xs)  stack = do
     newStack <- evalExpr x stack
     eval xs newStack
 
-
-
+evalAll :: [Exp] -> Stack -> IO Stack
+evalAll [x] stack = evalExpr x stack
+evalAll (x:xs) stack = do
+    (evalExpr x stack) 
+    (evalAll xs newStack)
 
 evalExpr :: Exp -> Stack -> IO Stack
 evalExpr (Print (Lookup exp)) stack = do 
     let foundVar = getVar exp stack
     putStrLn (printVar foundVar)  
     return stack
+
+--Handles if else statements
+evalExpr (IfElse cond exps1 exps2) stack = do 
+    putStrLn("You've made it!")
+    if (evalEq (cond, stack))
+        then evalAll exps1 stack
+        else evalAll exps2 stack
+       
+        --tried doing list comprehension on all expresions e.g [evalExpr e stack | e <- exps1]
 
 -- output to console
 evalExpr (Print (Type exp)) stack = do 
@@ -29,7 +41,6 @@ evalExpr (Print (Type exp)) stack = do
 evalExpr (Print exp) stack = do
     putStrLn (printVal (evalTerminalExpr (exp,stack)))
     return stack
-
     
 -- Declare empty variable
 -- If variable is declared without an initial value, it is marked with "Empty"
@@ -61,7 +72,6 @@ evalExpr (DeclareWithVal name ReadLine) stack = do
 evalExpr (DeclareWithVal name exp) stack = 
     evalExpr(DeclareWithVal name (Type (evalTerminalExpr (exp,stack)))) stack
 
-
 -- Assigns new value to already declared variable
 -- Does not check if variable is already declared
 evalExpr (Assign name (Lookup varName)) stack = 
@@ -80,6 +90,7 @@ evalExpr (readLine) stack = do
     line <- getLine
     putStrLn("line read" ++ line)
     return stack
+
 
 -- General Operations
 evalTerminalExpr:: (Exp,Stack) -> Type
@@ -128,7 +139,6 @@ replaceVar map [] = []
 -- Finds variable inside the stack by given name
 getVar :: String -> Stack -> Map
 getVar name stack = head(filter ((==name).fst) stack) 
-
 
 
 -- returns value stored in a variable as a String 
