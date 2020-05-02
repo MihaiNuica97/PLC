@@ -19,8 +19,8 @@ main' = do (fileName : _ ) <- getArgs
            putStrLn ("Tokens : " ++ (show tokens))
            let parsedProg = reverse (parseCalc tokens)
            putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
-        
-           --this is to accept file contents from stdin although use of read is non lazy!
+
+           --this is to accept file contents from stdin and 
            {- contents <- getContents 
            let ints = convertToMatrix (lines contents) --converts to a matrix
            putStrLn ("Loaded contents of text file as a matrix: " ++ (show ints))

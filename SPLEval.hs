@@ -21,8 +21,12 @@ evalExpr (Print (Lookup exp)) stack = do
 
 
 -- output to console
-evalExpr (Print exp) stack = do 
+evalExpr (Print (Type exp)) stack = do 
     putStrLn (printVal exp)
+    return stack
+
+evalExpr (Print exp) stack = do
+    putStrLn (printVal (evalTerminalExpr (exp,stack)))
     return stack
 
 -- Declare empty variable
@@ -32,20 +36,28 @@ evalExpr (Declare var) stack = do
     putStrLn ("Variable " ++ var ++ " declared")
     return (declareVar var stack)
 
+-- Declare with value of an already existing variable
 evalExpr (DeclareWithVal name (Lookup varName)) stack = 
-    evalExpr(DeclareWithVal name (getValExp (getVar varName stack))) stack
+    evalExpr(DeclareWithVal name (Type (snd (getVar varName stack)))) stack
 
-evalExpr (DeclareWithVal name val) stack = do
+-- Declare with an absolute value
+evalExpr (DeclareWithVal name (Type val)) stack = do
     let stack' = declareVar name stack
     let stack'' = assignVar name val stack'
     return stack''
 
+-- Declare with result of an operation
+evalExpr (DeclareWithVal name exp) stack = 
+    evalExpr(DeclareWithVal name (Type (evalTerminalExpr (exp,stack)))) stack
+
+
 -- Assigns new value to already declared variable
 -- Does not check if variable is already declared
 evalExpr (Assign name (Lookup varName)) stack = 
-    evalExpr (Assign name (getValExp (getVar varName stack))) stack
+    evalExpr (Assign name (Type (snd (getVar varName stack)))) stack
 
-evalExpr (Assign name value) stack = do 
+-- Assign with absolute value
+evalExpr (Assign name (Type value)) stack = do 
     return (assignVar name value stack)
 
 {- If Else statements
@@ -63,46 +75,36 @@ evalExpr (while e) stack = do
     -}
 
 
+-- Assign with result of an operation
+evalExpr (Assign name exp) stack = 
+    evalExpr (Assign name (Type (evalTerminalExpr (exp,stack)))) stack
 
--- Arithmetic Operators
-evalExpr (Plus x1 x2) stack = do
-    let result = evalOp(Plus x1 x2)
-    putStrLn (show result)
-    return stack
 
-evalExpr (Minus x1 x2) stack = do
-    let result = evalOp(Minus x1 x2)
-    putStrLn (show result)
-    return stack    
 
-evalExpr (Times x1 x2) stack = do
-    let result = evalOp(Times x1 x2)
-    putStrLn (show result)
-    return stack
+
+-- General Operations
+evalTerminalExpr:: (Exp,Stack) -> Type
+evalTerminalExpr (exp,stack) = (Int (evalOp (exp,stack)))
+
     
-evalExpr (Div x1 x2) stack = do
-    let result = evalOp(Div x1 x2)
-    putStrLn (show result)
-    return stack  
-
-
-evalOp :: Exp -> Int
-evalOp (Plus x1 x2) = (evalOp x1) + (evalOp x2)
-evalOp (Minus x1 x2) = (evalOp x1) - (evalOp x2)
-evalOp (Times x1 x2) = (evalOp x1) * (evalOp x2)
-evalOp (Div x1 x2) = div (evalOp x1) (evalOp x2)
-evalOp (Int x) = x
-
+-- Arithmetic Operators, now with variables!
+evalOp :: (Exp,Stack) -> Int
+evalOp ((Plus x1 x2),stack) = (evalOp (x1,stack)) + (evalOp (x2,stack))
+evalOp ((Minus x1 x2),stack) = (evalOp (x1,stack)) - (evalOp (x2,stack))
+evalOp ((Times x1 x2),stack) = (evalOp (x1,stack)) * (evalOp (x2,stack))
+evalOp ((Div x1 x2),stack) = div (evalOp (x1,stack)) (evalOp (x2,stack))
+evalOp ((Type (Int x)),stack) = x
+evalOp ((Lookup name),stack) = evalOp ((Type (snd (getVar name stack))),stack)
 
 --operations on expresses
 declareVar :: String -> Stack -> Stack
 declareVar name stack = (name, Empty):stack
 
 -- finds variable inside the stack and changes its value. Works with expressions
-assignVar :: String -> Exp -> Stack -> Stack
-assignVar name (Int value) stack = replaceVar (name,(TyInt value)) stack
-assignVar name (String value) stack = replaceVar (name,(TyString value)) stack
-assignVar name (Bool value) stack = replaceVar (name,(TyBool value)) stack
+assignVar :: String -> Type -> Stack -> Stack
+assignVar name (Int value) stack = replaceVar (name,(Int value)) stack
+assignVar name (String value) stack = replaceVar (name,(String value)) stack
+assignVar name (Bool value) stack = replaceVar (name,(Bool value)) stack
 
 -- takes a variable, replaces the value in the stack and returns changed stack.
 -- utility function for assignVar
@@ -117,21 +119,17 @@ getVar :: String -> Stack -> Map
 getVar name stack = head(filter ((==name).fst) stack) 
 
 
--- returns the value of a variable as an Exp to feed it back into the main loop
-getValExp :: Map -> Exp
-getValExp (name, TyInt val) = Int val
-getValExp (name, TyBool val) = Bool val
-getValExp (name, TyString val) = String val 
 
 
 -- returns value stored in a variable as a String 
 printVar :: Map -> String
-printVar (name, TyInt val) = show val
-printVar (name, TyBool val) = show val
-printVar (name, TyString val) = val
+printVar (name, String val) = val
+printVar (name, Int val) = show val
+printVar (name, Bool val) = show val
+printVar (name, Empty) = "Null Value"
 
 -- returns free value as a String
-printVal :: Exp -> String
+printVal :: Type -> String
 printVal (Bool b) = show b
 printVal (Int i) = show i
 printVal (String s) = s
