@@ -12,11 +12,11 @@ eval (x:xs)  stack = do
     newStack <- evalExpr x stack
     eval xs newStack
 
-evalAll :: [Exp] -> Stack -> IO Stack
-evalAll [x] stack = evalExpr x stack
-evalAll (x:xs) stack = do
-    (evalExpr x stack) 
-    (evalAll xs newStack)
+-- evalAll :: [Exp] -> Stack -> IO Stack
+-- evalAll [x] stack = evalExpr x stack
+-- evalAll (x:xs) stack = do
+--     (evalExpr x stack) 
+--     (evalAll xs newStack)
 
 evalExpr :: Exp -> Stack -> IO Stack
 evalExpr (Print (Lookup exp)) stack = do 
@@ -25,11 +25,9 @@ evalExpr (Print (Lookup exp)) stack = do
     return stack
 
 --Handles if else statements
-evalExpr (IfElse cond exps1 exps2) stack = do 
-    putStrLn("You've made it!")
-    if (evalEq (cond, stack))
-        then evalAll exps1 stack
-        else evalAll exps2 stack
+evalExpr (IfElse cond exps1 exps2) stack 
+    | (evalTerminalExpr (cond,stack)) == (Bool True) = (eval exps1 stack)
+    | otherwise = (eval exps2 stack)
        
         --tried doing list comprehension on all expresions e.g [evalExpr e stack | e <- exps1]
 
