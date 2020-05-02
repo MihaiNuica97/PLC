@@ -11,6 +11,7 @@ module SPLTokens where
 #endif
 #if __GLASGOW_HASKELL__ >= 503
 import Data.Array
+import Data.Array.Base (unsafeAt)
 #else
 import Array
 #endif
@@ -20,6 +21,7 @@ import Array
 --
 -- This code is in the PUBLIC DOMAIN; you may copy it freely and use
 -- it for any purpose whatsoever.
+
 
 
 
@@ -47,30 +49,24 @@ import qualified Data.Bits
 
 -- | Encode a Haskell String to a list of Word8 values, in UTF8 format.
 utf8Encode :: Char -> [Word8]
-utf8Encode = uncurry (:) . utf8Encode'
-
-utf8Encode' :: Char -> (Word8, [Word8])
-utf8Encode' c = case go (ord c) of
-                  (x, xs) -> (fromIntegral x, map fromIntegral xs)
+utf8Encode = map fromIntegral . go . ord
  where
   go oc
-   | oc <= 0x7f       = ( oc
-                        , [
-                        ])
+   | oc <= 0x7f       = [oc]
 
-   | oc <= 0x7ff      = ( 0xc0 + (oc `Data.Bits.shiftR` 6)
-                        , [0x80 + oc Data.Bits..&. 0x3f
-                        ])
-
-   | oc <= 0xffff     = ( 0xe0 + (oc `Data.Bits.shiftR` 12)
-                        , [0x80 + ((oc `Data.Bits.shiftR` 6) Data.Bits..&. 0x3f)
+   | oc <= 0x7ff      = [ 0xc0 + (oc `Data.Bits.shiftR` 6)
                         , 0x80 + oc Data.Bits..&. 0x3f
-                        ])
-   | otherwise        = ( 0xf0 + (oc `Data.Bits.shiftR` 18)
-                        , [0x80 + ((oc `Data.Bits.shiftR` 12) Data.Bits..&. 0x3f)
+                        ]
+
+   | oc <= 0xffff     = [ 0xe0 + (oc `Data.Bits.shiftR` 12)
                         , 0x80 + ((oc `Data.Bits.shiftR` 6) Data.Bits..&. 0x3f)
                         , 0x80 + oc Data.Bits..&. 0x3f
-                        ])
+                        ]
+   | otherwise        = [ 0xf0 + (oc `Data.Bits.shiftR` 18)
+                        , 0x80 + ((oc `Data.Bits.shiftR` 12) Data.Bits..&. 0x3f)
+                        , 0x80 + ((oc `Data.Bits.shiftR` 6) Data.Bits..&. 0x3f)
+                        , 0x80 + oc Data.Bits..&. 0x3f
+                        ]
 
 
 
@@ -95,8 +91,8 @@ alexGetByte :: AlexInput -> Maybe (Byte,AlexInput)
 alexGetByte (p,c,(b:bs),s) = Just (b,(p,c,bs,s))
 alexGetByte (_,_,[],[]) = Nothing
 alexGetByte (p,_,[],(c:s))  = let p' = alexMove p c
-                              in case utf8Encode' c of
-                                   (b, bs) -> p' `seq`  Just (b, (p', c, bs, s))
+                                  (b:bs) = utf8Encode c
+                              in p' `seq`  Just (b, (p', c, bs, s))
 
 
 
@@ -176,13 +172,13 @@ alexStartPos :: AlexPosn
 alexStartPos = AlexPn 0 1 1
 
 alexMove :: AlexPosn -> Char -> AlexPosn
-alexMove (AlexPn a l c) '\t' = AlexPn (a+1)  l     (c+alex_tab_size-((c-1) `mod` alex_tab_size))
+alexMove (AlexPn a l c) '\t' = AlexPn (a+1)  l     (((c+alex_tab_size-1) `div` alex_tab_size)*alex_tab_size+1)
 alexMove (AlexPn a l _) '\n' = AlexPn (a+1) (l+1)   1
 alexMove (AlexPn a l c) _    = AlexPn (a+1)  l     (c+1)
 
 
 -- -----------------------------------------------------------------------------
--- Monad (default and with ByteString input)
+-- Default monad
 
 
 
@@ -233,6 +229,70 @@ alexMove (AlexPn a l c) _    = AlexPn (a+1)  l     (c+1)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- -----------------------------------------------------------------------------
+-- Monad (with ByteString input)
 
 
 
@@ -362,6 +422,7 @@ alexMove (AlexPn a l c) _    = AlexPn (a+1)  l     (c+1)
 
 
 
+
 -- -----------------------------------------------------------------------------
 -- Basic wrapper, ByteString version
 
@@ -450,11 +511,7 @@ alexScanTokens str0 = go (alexStartPos,'\n',[],str0)
 alex_tab_size :: Int
 alex_tab_size = 8
 alex_base :: Array Int Int
-<<<<<<< HEAD
 alex_base = listArray (0 :: Int, 63)
-=======
-alex_base = listArray (0 :: Int, 52)
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   [ -8
   , -147
   , -13
@@ -486,12 +543,9 @@ alex_base = listArray (0 :: Int, 52)
   , 1998
   , 2073
   , 2160
-<<<<<<< HEAD
   , 2235
   , 2322
   , 2397
-=======
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 1131
@@ -499,12 +553,6 @@ alex_base = listArray (0 :: Int, 52)
   , 0
   , 0
   , 0
-<<<<<<< HEAD
-=======
-  , 2235
-  , 2322
-  , 2397
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 2484
   , 2559
   , 2646
@@ -517,7 +565,6 @@ alex_base = listArray (0 :: Int, 52)
   , 3207
   , 3294
   , 3369
-<<<<<<< HEAD
   , 3456
   , 3531
   , 3618
@@ -533,23 +580,13 @@ alex_base = listArray (0 :: Int, 52)
 
 alex_table :: Array Int Int
 alex_table = listArray (0 :: Int, 4521)
-=======
-  ]
-
-alex_table :: Array Int Int
-alex_table = listArray (0 :: Int, 3624)
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   [ 0
   , 23
   , 22
   , 23
   , 23
   , 23
-<<<<<<< HEAD
   , 53
-=======
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 1
   , 23
   , 23
@@ -575,7 +612,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 0
   , 23
-<<<<<<< HEAD
   , 39
   , 40
   , 37
@@ -584,16 +620,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 36
   , 0
   , 38
-=======
-  , 36
-  , 37
-  , 34
-  , 32
-  , 25
-  , 33
-  , 0
-  , 35
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 26
   , 26
   , 26
@@ -607,7 +633,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 25
   , 0
-<<<<<<< HEAD
   , 34
   , 0
   , 0
@@ -638,45 +663,12 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 31
-  , 0
-  , 0
-  , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 45
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 49
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 25
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -703,34 +695,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 45
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 47
-  , 46
-  , 46
-  , 46
-  , 49
-  , 46
-  , 41
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 19
   , 21
   , 21
@@ -2662,7 +2626,6 @@ alex_table = listArray (0 :: Int, 3624)
   , -1
   , -1
   , -1
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -2673,55 +2636,12 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 0
-  , 0
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 0
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 53
   , 53
@@ -2752,48 +2672,8 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 0
   , 0
-  , 46
   , 0
-<<<<<<< HEAD
   , 53
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 53
   , 53
@@ -3443,7 +3323,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 53
   , 0
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -3642,67 +3521,11 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-  , 46
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
   , 12
   , 53
@@ -3769,7 +3592,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 0
   , 0
   , 0
@@ -3786,18 +3608,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
@@ -3805,7 +3615,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 0
   , 12
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -3961,78 +3770,12 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-  , 46
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
-<<<<<<< HEAD
   , 12
   , 53
   , 53
@@ -4060,13 +3803,10 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 0
   , 53
@@ -4105,68 +3845,11 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 0
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-  , 46
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
   , 12
   , 53
@@ -4233,23 +3916,12 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 0
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
   , 0
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -4260,79 +3932,12 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-  , 46
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 29
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
-<<<<<<< HEAD
   , 12
   , 53
   , 53
@@ -4360,13 +3965,10 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 0
   , 53
@@ -4405,68 +4007,11 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 0
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-  , 46
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 30
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
   , 12
   , 53
@@ -4533,23 +4078,12 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 0
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
   , 0
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -4560,79 +4094,12 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-  , 46
   , 0
-  , 52
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
-<<<<<<< HEAD
   , 12
   , 53
   , 53
@@ -4660,13 +4127,10 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 0
   , 53
@@ -4705,68 +4169,11 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 0
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-  , 46
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 39
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
   , 12
   , 53
@@ -4833,23 +4240,12 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 0
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
   , 0
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -4860,79 +4256,12 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-  , 46
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 40
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
-<<<<<<< HEAD
   , 12
   , 53
   , 53
@@ -4960,13 +4289,10 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 0
   , 53
@@ -5005,68 +4331,11 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 0
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-  , 46
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 50
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
   , 12
   , 53
@@ -5133,23 +4402,12 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 0
   , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
   , 0
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -5160,79 +4418,12 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-  , 46
   , 0
-  , 48
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
   , 0
-<<<<<<< HEAD
   , 12
   , 53
   , 53
@@ -5260,76 +4451,11 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 0
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
-=======
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 0
-  , 0
-  , 0
-  , 0
-  , 46
-  , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 53
   , 53
@@ -5406,7 +4532,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 53
   , 0
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -5433,59 +4558,16 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
-=======
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 0
   , 0
   , 53
@@ -5498,46 +4580,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 44
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
@@ -5545,7 +4587,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 0
   , 12
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -5572,39 +4613,10 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 0
   , 53
@@ -5643,36 +4655,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 43
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
@@ -5739,60 +4721,16 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 0
-<<<<<<< HEAD
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
-=======
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 0
   , 53
   , 53
@@ -5804,46 +4742,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 42
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
@@ -5851,7 +4749,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 0
   , 12
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -5878,39 +4775,10 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 0
   , 53
@@ -5949,36 +4817,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 51
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
@@ -6045,60 +4883,16 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 0
-<<<<<<< HEAD
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
-=======
-  , 12
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 0
   , 53
   , 53
@@ -6110,46 +4904,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 38
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
@@ -6157,7 +4911,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 0
   , 0
   , 12
-<<<<<<< HEAD
   , 53
   , 53
   , 53
@@ -6184,39 +4937,10 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
   , 0
-<<<<<<< HEAD
   , 53
   , 0
   , 53
@@ -6245,36 +4969,6 @@ alex_table = listArray (0 :: Int, 3624)
   , 53
   , 53
   , 53
-=======
-  , 46
-  , 0
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 28
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
-  , 46
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , 0
   , 0
   , 0
@@ -6411,11 +5105,7 @@ alex_table = listArray (0 :: Int, 3624)
   ]
 
 alex_check :: Array Int Int
-<<<<<<< HEAD
 alex_check = listArray (0 :: Int, 4521)
-=======
-alex_check = listArray (0 :: Int, 3624)
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   [ -1
   , 9
   , 10
@@ -10568,7 +9258,6 @@ alex_check = listArray (0 :: Int, 3624)
   , -1
   , -1
   , -1
-<<<<<<< HEAD
   , 48
   , 49
   , 50
@@ -10806,8 +9495,6 @@ alex_check = listArray (0 :: Int, 3624)
   , 120
   , 121
   , 122
-=======
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , -1
   , -1
   , -1
@@ -10944,11 +9631,7 @@ alex_check = listArray (0 :: Int, 3624)
   ]
 
 alex_deflt :: Array Int Int
-<<<<<<< HEAD
 alex_deflt = listArray (0 :: Int, 63)
-=======
-alex_deflt = listArray (0 :: Int, 52)
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   [ -1
   , -1
   , -1
@@ -11002,7 +9685,6 @@ alex_deflt = listArray (0 :: Int, 52)
   , -1
   , -1
   , -1
-<<<<<<< HEAD
   , -1
   , -1
   , -1
@@ -11017,11 +9699,6 @@ alex_deflt = listArray (0 :: Int, 52)
   ]
 
 alex_accept = listArray (0 :: Int, 63)
-=======
-  ]
-
-alex_accept = listArray (0 :: Int, 52)
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   [ AlexAccNone
   , AlexAccNone
   , AlexAccNone
@@ -11047,7 +9724,6 @@ alex_accept = listArray (0 :: Int, 52)
   , AlexAccSkip
   , AlexAccSkip
   , AlexAccSkip
-<<<<<<< HEAD
   , AlexAcc 38
   , AlexAcc 37
   , AlexAcc 36
@@ -11059,8 +9735,6 @@ alex_accept = listArray (0 :: Int, 52)
   , AlexAcc 30
   , AlexAcc 29
   , AlexAcc 28
-=======
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
   , AlexAcc 27
   , AlexAcc 26
   , AlexAcc 25
@@ -11091,7 +9765,6 @@ alex_accept = listArray (0 :: Int, 52)
   , AlexAcc 0
   ]
 
-<<<<<<< HEAD
 alex_actions = array (0 :: Int, 39)
   [ (38,alex_action_2)
   , (37,alex_action_3)
@@ -11135,40 +9808,6 @@ alex_actions = array (0 :: Int, 39)
   ]
 
 {-# LINE 35 "SPLTokens.x" #-}
-=======
-alex_actions = array (0 :: Int, 28)
-  [ (27,alex_action_2)
-  , (26,alex_action_3)
-  , (25,alex_action_4)
-  , (24,alex_action_5)
-  , (23,alex_action_6)
-  , (22,alex_action_7)
-  , (21,alex_action_8)
-  , (20,alex_action_9)
-  , (19,alex_action_10)
-  , (18,alex_action_11)
-  , (17,alex_action_12)
-  , (16,alex_action_13)
-  , (15,alex_action_14)
-  , (14,alex_action_15)
-  , (13,alex_action_16)
-  , (12,alex_action_16)
-  , (11,alex_action_16)
-  , (10,alex_action_16)
-  , (9,alex_action_16)
-  , (8,alex_action_16)
-  , (7,alex_action_16)
-  , (6,alex_action_16)
-  , (5,alex_action_16)
-  , (4,alex_action_16)
-  , (3,alex_action_16)
-  , (2,alex_action_16)
-  , (1,alex_action_16)
-  , (0,alex_action_16)
-  ]
-
-{-# LINE 32 "SPLTokens.x" #-}
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
 
 -- need to add tokens to control stream processing
 
@@ -11204,16 +9843,14 @@ tokenPosn (TokenIn  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 
 tokenPosn (TokenIf (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenElse (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenWhile (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 
 tokenPosn (TokenInt  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenString  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenBool  (AlexPn a l c) b) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenVar (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenName  (AlexPn a l c) _) = show(l) ++ ":" ++ show(c)
-<<<<<<< HEAD
 
-=======
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
 tokenPosn (TokenEq  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenPlus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenMinus  (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
@@ -11231,7 +9868,6 @@ alex_action_4 =  tok (\p s -> TokenString p (tail (init s)))
 alex_action_5 =  tok (\p s -> TokenVar p)
 alex_action_6 =  tok (\p s -> TokenBool p True)  
 alex_action_7 =  tok (\p s -> TokenBool p False) 
-<<<<<<< HEAD
 alex_action_8 =  tok (\p s -> TokenIf p) 
 alex_action_9 =  tok (\p s -> TokenElse p) 
 alex_action_10 =  tok (\p s -> TokenWhile p) 
@@ -11244,17 +9880,6 @@ alex_action_16 =  tok (\p s -> TokenLParen p)
 alex_action_17 =  tok (\p s -> TokenRParen p) 
 alex_action_18 =  tok (\p s -> TokenPrint p)
 alex_action_19 =  tok (\p s -> TokenName p s) 
-=======
-alex_action_8 =  tok (\p s -> TokenEq p) 
-alex_action_9 =  tok (\p s -> TokenPlus p) 
-alex_action_10 =  tok (\p s -> TokenMinus p) 
-alex_action_11 =  tok (\p s -> TokenTimes p) 
-alex_action_12 =  tok (\p s -> TokenDiv p) 
-alex_action_13 =  tok (\p s -> TokenLParen p) 
-alex_action_14 =  tok (\p s -> TokenRParen p) 
-alex_action_15 =  tok (\p s -> TokenPrint p)
-alex_action_16 =  tok (\p s -> TokenName p s) 
->>>>>>> accb787172c42ed3315c409e7167429dbd277cec
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 -- -----------------------------------------------------------------------------
 -- ALEX TEMPLATE

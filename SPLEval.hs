@@ -85,7 +85,6 @@ evalExpr (Div x1 x2) stack = do
     putStrLn (show result)
     return stack  
 
-    
 
 evalOp :: Exp -> Int
 evalOp (Plus x1 x2) = (evalOp x1) + (evalOp x2)
