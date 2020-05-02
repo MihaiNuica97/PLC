@@ -14,7 +14,8 @@ import SPLTokens
     string  { TokenString _ $$}
     var     { TokenVar _ }
     varName { TokenName _ $$ }
-    '='     { TokenEq _ } 
+    '='     { TokenEq _ }
+    '=='    {TokenIsEq _} 
     '+'     { TokenPlus _ } 
     '-'     { TokenMinus _ } 
     '*'     { TokenTimes _ } 
@@ -23,6 +24,7 @@ import SPLTokens
     ')'     { TokenRParen _ } 
     print   { TokenPrint _}
 
+    %left '=='
     %left '+' '-' 
     %left '*' '/' 
     %left nl
@@ -44,6 +46,7 @@ Exp : Exp '+' Exp            { Plus $1 $3 }
     | Exp '-' Exp            { Minus $1 $3 } 
     | Exp '*' Exp            { Times $1 $3 } 
     | Exp '/' Exp            { Div $1 $3 } 
+    | Exp '==' Exp           {IsEq $1 $3}
     | '(' Exp ')'            { $2 } 
     | int                    { Type(Int $1) }
     | int int                { Plus (Type (Int $1)) (Type (Int $2))}
@@ -72,6 +75,7 @@ data Exp = Type Type
         | Minus Exp Exp 
         | Times Exp Exp 
         | Div Exp Exp 
+        | IsEq Exp Exp
         | Declare String 
         | DeclareWithVal String Exp
         | Assign String Exp

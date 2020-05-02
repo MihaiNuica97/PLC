@@ -1,5 +1,4 @@
 var x = 3;
-var y = 3+ 4 + x + 5 -20 * 25;
-
-
-print(y)
+var y = (x == 3);
+y = (x == 4);
+print(y);

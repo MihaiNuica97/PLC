@@ -42,7 +42,7 @@ evalExpr (DeclareWithVal name (Type val)) stack = do
     let stack' = declareVar name stack
     let stack'' = assignVar name val stack'
     return stack''
-
+    
 -- Declare with result of an operation
 evalExpr (DeclareWithVal name exp) stack = 
     evalExpr(DeclareWithVal name (Type (evalTerminalExpr (exp,stack)))) stack
@@ -66,6 +66,7 @@ evalExpr (Assign name exp) stack =
 
 -- General Operations
 evalTerminalExpr:: (Exp,Stack) -> Type
+evalTerminalExpr ((IsEq x1 x2),stack) = (Bool (evalEq ((IsEq x1 x2),stack)))
 evalTerminalExpr (exp,stack) = (Int (evalOp (exp,stack)))
 
     
@@ -77,6 +78,17 @@ evalOp ((Times x1 x2),stack) = (evalOp (x1,stack)) * (evalOp (x2,stack))
 evalOp ((Div x1 x2),stack) = div (evalOp (x1,stack)) (evalOp (x2,stack))
 evalOp ((Type (Int x)),stack) = x
 evalOp ((Lookup name),stack) = evalOp ((Type (snd (getVar name stack))),stack)
+
+-- Boolean operations
+evalEq :: (Exp,Stack) -> Bool
+evalEq (((IsEq (Type a) (Type b))),stack) = a == b
+evalEq (((IsEq (Lookup a) (Type b))),stack) = (snd (getVar a stack)) == b
+evalEq (((IsEq (Type b) (Lookup a))),stack) = (snd (getVar a stack)) == b
+evalEq (((IsEq (Lookup a) (Lookup b))),stack) = (snd (getVar a stack)) == (snd (getVar b stack))
+evalEq (((IsEq (Type a) exp)),stack) = a == (Bool (evalEq(exp,stack)))
+evalEq (((IsEq exp (Type a))),stack) = a == (Bool (evalEq(exp,stack)))
+-- evalEq ((IsEq x1 x1),stack) = (evalEq(x1,stack)) == (evalEq (x2,stack))
+
 
 --operations on expresses
 declareVar :: String -> Stack -> Stack
