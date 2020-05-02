@@ -42,7 +42,7 @@ evalExpr (Print exp) stack = do
     
 -- Declare empty variable
 -- If variable is declared without an initial value, it is marked with "Empty"
--- Does not check if variable is already declared
+-- Does NOT check if variable is already declared
 evalExpr (Declare var) stack = do
     putStrLn ("Variable " ++ var ++ " declared")
     return stack
@@ -71,7 +71,7 @@ evalExpr (DeclareWithVal name exp) stack =
     evalExpr(DeclareWithVal name (Type (evalTerminalExpr (exp,stack)))) stack
 
 -- Assigns new value to already declared variable
--- Does not check if variable is already declared
+-- Does NOT check if variable is already declared
 evalExpr (Assign name (Lookup varName)) stack = 
     evalExpr (Assign name (Type (snd (getVar varName stack)))) stack
 
@@ -92,7 +92,12 @@ evalExpr (readLine) stack = do
 
 -- General Operations
 evalTerminalExpr:: (Exp,Stack) -> Type
-evalTerminalExpr ((IsEq x1 x2),stack) = (Bool (evalEq ((IsEq x1 x2),stack)))
+evalTerminalExpr((NOT x),stack) = (evalBool ((NOT x),stack))
+evalTerminalExpr ((AND x1 x2),stack) = (evalBool ((AND x1 x2),stack))
+evalTerminalExpr ((OR x1 x2),stack) = (evalBool ((OR x1 x2),stack))
+evalTerminalExpr ((IsEq x1 x2),stack) = (evalBool ((IsEq x1 x2),stack))
+evalTerminalExpr ((IsLess x1 x2),stack) = (evalBool ((IsLess x1 x2),stack))
+evalTerminalExpr ((IsMore x1 x2),stack) = (evalBool ((IsMore x1 x2),stack))
 evalTerminalExpr (exp,stack) = (Int (evalOp (exp,stack)))
 
     
@@ -106,19 +111,43 @@ evalOp ((Type (Int x)),stack) = x
 evalOp ((Lookup name),stack) = evalOp ((Type (snd (getVar name stack))),stack)
 
 -- Boolean operations
-evalEq :: (Exp,Stack) -> Bool
-evalEq (((IsEq (Type a) (Type b))),stack) = a == b
-evalEq (((IsEq (Lookup a) (Type b))),stack) = (snd (getVar a stack)) == b
-evalEq (((IsEq (Type b) (Lookup a))),stack) = (snd (getVar a stack)) == b
-evalEq (((IsEq (Lookup a) (Lookup b))),stack) = (snd (getVar a stack)) == (snd (getVar b stack))
-evalEq (((IsEq (Type a) exp)),stack) = a == (Bool (evalEq(exp,stack)))
-evalEq (((IsEq exp (Type a))),stack) = a == (Bool (evalEq(exp,stack)))
--- evalEq ((IsEq x1 x1),stack) = (evalEq(x1,stack)) == (evalEq (x2,stack))
+evalBool :: (Exp,Stack) -> Type
+evalBool (Type (Bool b),stack) = (Bool b)
+evalBool (Type (String s),stack) = (String s)
+evalBool (Type (Int x),stack) = (Int x)
+evalBool ((AND x1 x2),stack) = (andType ((evalBool(x1,stack)),(evalBool(x2,stack))))
+evalBool ((OR x1 x2),stack) = (orType ((evalBool(x1,stack)),(evalBool(x2,stack))))
+evalBool ((NOT exp),stack) =  negateType(evalBool(exp,stack))
+evalBool ((Lookup name),stack) = evalBool((Type (snd (getVar name stack))),stack)
+evalBool ((IsEq x1 x2),stack) = (Bool ((evalBool (x1,stack)) == (evalBool(x2,stack))))
+evalBool ((IsLess x1 x2),stack) = (lessType ((evalBool(x1,stack)),(evalBool(x2,stack))))
+evalBool ((IsMore x1 x2),stack) = (moreType ((evalBool(x1,stack)),(evalBool(x2,stack))))
+evalBool ((Plus x1 x2),stack) = (Int (evalOp ((Plus x1 x2),stack)))
+evalBool ((Minus x1 x2),stack) = (Int (evalOp ((Minus x1 x2),stack)))
+evalBool ((Times x1 x2),stack) = (Int (evalOp ((Times x1 x2),stack)))
+evalBool ((Div x1 x2),stack) = (Int (evalOp ((Div x1 x2),stack)))
+
+
+negateType :: Type -> Type
+negateType (Bool b) = Bool (not b)
+
+andType :: (Type,Type) -> Type
+andType ((Bool b1),(Bool b2)) = (Bool (b1 && b2))
+
+orType :: (Type,Type) -> Type
+orType ((Bool b1),(Bool b2)) = (Bool (b1 || b2))
+
+lessType :: (Type,Type) -> Type
+lessType ((Int x),(Int y)) = (Bool (x < y))
+
+moreType :: (Type,Type) -> Type
+moreType ((Int x),(Int y)) = (Bool (x > y))
 
 
 --operations on expresses
 declareVar :: String -> Stack -> Stack
 declareVar name stack = (name, Empty):stack
+
 
 -- finds variable inside the stack and changes its value. Works with expressions
 assignVar :: String -> Type -> Stack -> Stack
