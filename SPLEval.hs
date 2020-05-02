@@ -33,32 +33,36 @@ evalExpr (Declare var) stack = do
     putStrLn ("Variable " ++ var ++ " declared")
     return (declareVar var stack)
 
+-- Declare with value of an already existing variable
 evalExpr (DeclareWithVal name (Lookup varName)) stack = 
     evalExpr(DeclareWithVal name (Type (snd (getVar varName stack)))) stack
 
-
-
+-- Declare with an absolute value
 evalExpr (DeclareWithVal name (Type val)) stack = do
     let stack' = declareVar name stack
     let stack'' = assignVar name val stack'
     return stack''
 
+-- Declare with result of an operation
 evalExpr (DeclareWithVal name exp) stack = 
     evalExpr(DeclareWithVal name (Type (evalTerminalExpr (exp,stack)))) stack
 
--- evalExpr (DeclareWithVal name exp) stack = 
---     evalExpr 
 
 -- Assigns new value to already declared variable
 -- Does not check if variable is already declared
 evalExpr (Assign name (Lookup varName)) stack = 
     evalExpr (Assign name (Type (snd (getVar varName stack)))) stack
 
+-- Assign with absolute value
 evalExpr (Assign name (Type value)) stack = do 
     return (assignVar name value stack)
 
+-- Assign with result of an operation
 evalExpr (Assign name exp) stack = 
     evalExpr (Assign name (Type (evalTerminalExpr (exp,stack)))) stack
+
+
+
 
 -- General Operations
 evalTerminalExpr:: (Exp,Stack) -> Type
