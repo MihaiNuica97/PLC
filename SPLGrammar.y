@@ -25,7 +25,6 @@ import SPLTokens
 
     %left '+' '-' 
     %left '*' '/' 
-    %left '^'
     %left nl
     %right var
     %nonassoc int string true false var '(' ')'
@@ -68,17 +67,15 @@ data Type = Bool Bool  | Int Int | String String | Empty
 
 
 
-data Exp = Let String Exp Exp 
+data Exp = Type Type
         | Plus Exp Exp 
         | Minus Exp Exp 
         | Times Exp Exp 
         | Div Exp Exp 
-        | Expo Exp Exp
         | Declare String 
         | DeclareWithVal String Exp
         | Assign String Exp
         | Print Exp
-        | Type Type
         | Lookup String
          deriving Show 
 }

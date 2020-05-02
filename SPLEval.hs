@@ -18,8 +18,12 @@ evalExpr (Print (Lookup exp)) stack = do
     return stack
 
 -- output to console
-evalExpr (Print exp) stack = do 
+evalExpr (Print (Type exp)) stack = do 
     putStrLn (printVal exp)
+    return stack
+
+evalExpr (Print exp) stack = do
+    putStrLn (printVal (evalTerminalExpr (exp,stack)))
     return stack
 
 -- Declare empty variable
@@ -32,10 +36,18 @@ evalExpr (Declare var) stack = do
 evalExpr (DeclareWithVal name (Lookup varName)) stack = 
     evalExpr(DeclareWithVal name (Type (snd (getVar varName stack)))) stack
 
+
+
 evalExpr (DeclareWithVal name (Type val)) stack = do
     let stack' = declareVar name stack
     let stack'' = assignVar name val stack'
     return stack''
+
+evalExpr (DeclareWithVal name exp) stack = 
+    evalExpr(DeclareWithVal name (Type (evalTerminalExpr (exp,stack)))) stack
+
+-- evalExpr (DeclareWithVal name exp) stack = 
+--     evalExpr 
 
 -- Assigns new value to already declared variable
 -- Does not check if variable is already declared
@@ -45,38 +57,22 @@ evalExpr (Assign name (Lookup varName)) stack =
 evalExpr (Assign name (Type value)) stack = do 
     return (assignVar name value stack)
 
+evalExpr (Assign name exp) stack = 
+    evalExpr (Assign name (Type (evalTerminalExpr (exp,stack)))) stack
 
--- Arithmetic Operators
-evalExpr (Plus x1 x2) stack = do
-    let result = evalOp(Plus x1 x2)
-    putStrLn (show result)
-    return stack
-
-evalExpr (Minus x1 x2) stack = do
-    let result = evalOp(Minus x1 x2)
-    putStrLn (show result)
-    return stack    
-
-evalExpr (Times x1 x2) stack = do
-    let result = evalOp(Times x1 x2)
-    putStrLn (show result)
-    return stack
-    
-evalExpr (Div x1 x2) stack = do
-    let result = evalOp(Div x1 x2)
-    putStrLn (show result)
-    return stack  
+-- General Operations
+evalTerminalExpr:: (Exp,Stack) -> Type
+evalTerminalExpr (exp,stack) = (Int (evalOp (exp,stack)))
 
     
-
-evalOp :: Exp -> Int
-evalOp (Plus x1 x2) = (evalOp x1) + (evalOp x2)
-evalOp (Minus x1 x2) = (evalOp x1) - (evalOp x2)
-evalOp (Times x1 x2) = (evalOp x1) * (evalOp x2)
-evalOp (Div x1 x2) = div (evalOp x1) (evalOp x2)
-evalOp (Type (Int x)) = x
-
-
+-- Arithmetic Operators, now with variables!
+evalOp :: (Exp,Stack) -> Int
+evalOp ((Plus x1 x2),stack) = (evalOp (x1,stack)) + (evalOp (x2,stack))
+evalOp ((Minus x1 x2),stack) = (evalOp (x1,stack)) - (evalOp (x2,stack))
+evalOp ((Times x1 x2),stack) = (evalOp (x1,stack)) * (evalOp (x2,stack))
+evalOp ((Div x1 x2),stack) = div (evalOp (x1,stack)) (evalOp (x2,stack))
+evalOp ((Type (Int x)),stack) = x
+evalOp ((Lookup name),stack) = evalOp ((Type (snd (getVar name stack))),stack)
 
 --operations on expresses
 declareVar :: String -> Stack -> Stack
@@ -111,7 +107,7 @@ printVar (name, Bool val) = show val
 printVar (name, Empty) = "Null Value"
 
 -- returns free value as a String
-printVal :: Exp -> String
-printVal (Type (Bool b)) = show b
-printVal (Type (Int i)) = show i
-printVal (Type (String s)) = s
+printVal :: Type -> String
+printVal (Bool b) = show b
+printVal (Int i) = show i
+printVal (String s) = s
