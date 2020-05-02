@@ -1,4 +1,3 @@
-var x = 3;
-var y = (x == 3);
-y = (x == 4);
-print(y);
+var x = 6;
+var y = 3;
+print(7 <= x);
