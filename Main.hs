@@ -17,7 +17,7 @@ main' = do (fileName : _ ) <- getArgs
            putStrLn ("Parsing from file : " ++ fileName ++ "\n" ++ sourceText)
            let tokens = alexScanTokens sourceText
            putStrLn ("Tokens : " ++ (show tokens))
-           let parsedProg = reverse (parseCalc tokens)
+           let parsedProg = (parseCalc tokens)
            putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
 
            --this is to accept file contents from stdin and 

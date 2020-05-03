@@ -12,11 +12,6 @@ eval (x:xs)  stack = do
     newStack <- evalExpr x stack
     eval xs newStack
 
--- evalAll :: [Exp] -> Stack -> IO Stack
--- evalAll [x] stack = evalExpr x stack
--- evalAll (x:xs) stack = do
---     (evalExpr x stack) 
---     (evalAll xs newStack)
 
 evalExpr :: Exp -> Stack -> IO Stack
 evalExpr (Print (Lookup exp)) stack = do 
@@ -92,6 +87,7 @@ evalExpr (readLine) stack = do
 
 -- General Operations
 evalTerminalExpr:: (Exp,Stack) -> Type
+evalTerminalExpr((Type (Bool b)),stack) = (evalBool ((Type (Bool b)),stack))
 evalTerminalExpr((NOT x),stack) = (evalBool ((NOT x),stack))
 evalTerminalExpr ((AND x1 x2),stack) = (evalBool ((AND x1 x2),stack))
 evalTerminalExpr ((OR x1 x2),stack) = (evalBool ((OR x1 x2),stack))

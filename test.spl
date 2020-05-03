@@ -1,6 +1,11 @@
-if(true){
+if(true)
+{
     print(true);
-}else{
-    print(false);
-    print("123")
+    print("Reece suge pula");
 }
+else
+{
+    print(false);
+    print("123");
+}
+print("PLM");

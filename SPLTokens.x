@@ -13,7 +13,7 @@ $quote = \"
 tokens :-
   $white+       ; 
   "--".*      ;
-  [\n \;]+                        { tok (\p s -> TokenNewLine p)}
+  [\;]+                        { tok (\p s -> TokenNewLine p)}
   [\-]?$digit+                    { tok (\p s -> TokenInt p (read s)) }
   $quote .* $quote                { tok (\p s -> TokenString p (tail (init s))) }
   var                             { tok (\p s -> TokenVar p)}
