@@ -49,10 +49,11 @@ import SPLTokens
 %% 
 
 
-Exps : Exps nl Exp      { $3 : $1 }
-      | Exps nl         { $1 }
-      | Exp             { [$1] }
-      | {- empty -}		{ [] }
+Exps : Exp nl Exps      { $1 : $3 }
+    | nl Exps         { $2 }
+    | Exp Exps          {$1 : $2}
+    | Exp             { [$1] }
+    | {- empty -}		{ [] }
 
 
 Exp :: {Exp}
@@ -69,19 +70,19 @@ Exp : Exp '+' Exp            { Plus $1 $3 }
     | Exp or Exp             { OR $1 $3}
     | not Exp                { NOT $2}                           
     | '(' Exp ')'            { $2 } 
-    | '{' Exp '}'                           { $2 } 
+    | '{' Exp '}'            { $2 } 
     | int                    { Type (Int $1) }
     | int int                { Plus (Type (Int $1)) (Type (Int $2))}
     | true                   { Type (Bool $1)}
     | false                  { Type (Bool $1)} 
     | string                 { Type (String $1)}
-    | print '('Exp')'        { Print $3 }
+    | print '('Exp')'  nl    { Print $3 }
     | varName                { Lookup $1 }
-    | var varName            { Declare $2}
-    | varName '=' Exp        { Assign $1 $3}
-    | var varName '=' Exp    { DeclareWithVal $2 $4}
-    | readLine               { ReadLine }
-    | if '(' Exp ')' '{' Exps '}' else '{' Exps '}' { IfElse $3 $6 $10} 
+    | var varName nl         { Declare $2}
+    | varName '=' Exp nl     { Assign $1 $3}
+    | var varName '=' Exp nl { DeclareWithVal $2 $4}
+    | readLine nl               { ReadLine }
+    | if '(' Exp ')' '{' Exps '}' else '{' Exps '}'  { IfElse $3 $6 $10} 
 
 { 
 
@@ -111,6 +112,5 @@ data Exp = Type Type
         | Lookup String
         | ReadLine
         | IfElse Exp [Exp] [Exp]
-    
          deriving Show 
 }

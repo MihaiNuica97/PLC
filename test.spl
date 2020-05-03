@@ -1,6 +1,10 @@
-if(true){
+if(true)
+{
     print(true);
-}else{
-    print(false);
-    print("123")
 }
+else
+{
+    print(false);
+    print("123");
+}
+print("PLM");
