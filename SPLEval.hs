@@ -87,7 +87,7 @@ evalExpr (DeclareWithVal name ReadLine) stack = do
     endReached <- isEOF 
     if endReached -- if end of file reached,
         then do
-            let val = parseInput []
+            let val = (Arr [])
             let stack' = declareVar name stack
             let stack'' = assignVar name val stack'
             return stack''
@@ -114,6 +114,20 @@ evalExpr (Assign name (GetIndex i (Lookup arrName))) stack =
 -- Assign with absolute value
 evalExpr (Assign name (Type value)) stack = do 
     return (assignVar name value stack)
+
+evalExpr (Assign name ReadLine) stack = do
+    endReached <- isEOF 
+    if endReached -- if end of file reached,
+        then do
+            let val = (Arr [])
+            let stack' = assignVar name val stack
+            return stack'
+        else do
+            line <- getLine
+            let val = parseInput line
+            let stack' = assignVar name val stack
+            return stack'
+
 
 -- Assign with result of an operation
 evalExpr (Assign name exp) stack = 
@@ -222,6 +236,8 @@ getIndex i (name,Arr (x:xs))
     | otherwise = (getIndex (i-1) (name, (Arr xs)))
 getIndex i (name, Arr []) = NULL
 
+-- getIndex :: Exp -> Type
+-- getIndex x = NULL
 
 -- Returns array length
 arrLength :: Int -> Map -> Int

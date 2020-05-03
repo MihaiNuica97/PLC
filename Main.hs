@@ -13,11 +13,11 @@ main = catch main' noParse
 
 main' = do (fileName : _ ) <- getArgs 
            sourceText <- readFile fileName
-           --putStrLn ("Parsing from file : " ++ fileName ++ "\n" ++ sourceText)
+           putStrLn ("Parsing from file : " ++ fileName ++ "\n" ++ sourceText)
            let tokens = alexScanTokens sourceText
-           --putStrLn ("Tokens : " ++ (show tokens))
+           putStrLn ("Tokens : " ++ (show tokens))
            let parsedProg = (parseCalc tokens)
-           --putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
+           putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
            eval parsedProg []
         
         
