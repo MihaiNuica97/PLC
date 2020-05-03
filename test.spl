@@ -5,3 +5,8 @@ print(y);
 var i;
 i = (y[0] == 3);
 print(i);
+
+if(false)
+{
+    print(true);
+}

@@ -734,7 +734,7 @@ action_94 _ = happyReduce_37
 action_95 _ = happyReduce_32
 
 action_96 (36) = happyShift action_97
-action_96 _ = happyFail (happyExpListPerState 96)
+action_96 _ = happyReduce_43
 
 action_97 (29) = happyShift action_98
 action_97 _ = happyFail (happyExpListPerState 97)
@@ -1132,6 +1132,19 @@ happyReduction_42 (_ `HappyStk`
 	happyRest)
 	 = HappyAbsSyn6
 		 (IfElse happy_var_3 happy_var_6 happy_var_10
+	) `HappyStk` happyRest
+
+happyReduce_43 = happyReduce 7 6 happyReduction_43
+happyReduction_43 (_ `HappyStk`
+	(HappyAbsSyn4  happy_var_6) `HappyStk`
+	_ `HappyStk`
+	_ `HappyStk`
+	(HappyAbsSyn6  happy_var_3) `HappyStk`
+	_ `HappyStk`
+	_ `HappyStk`
+	happyRest)
+	 = HappyAbsSyn6
+		 (IfElse happy_var_3 happy_var_6 []
 	) `HappyStk` happyRest
 
 happyNewToken action sts stk [] =

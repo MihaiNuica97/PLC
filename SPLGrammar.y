@@ -104,6 +104,7 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     | readLine                                      { ReadLine }
     
     | if '(' Exp ')' '{' Exps '}' else '{' Exps '}' { IfElse $3 $6 $10} 
+    | if '(' Exp ')' '{' Exps '}'                   { IfElse $3 $6 []}
 
 { 
 

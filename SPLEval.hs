@@ -11,7 +11,8 @@ eval [x] stack = evalExpr x stack
 eval (x:xs)  stack = do
     newStack <- evalExpr x stack
     eval xs newStack
-
+eval [] stack = do
+    return stack
 
 evalExpr :: Exp -> Stack -> IO Stack
 
