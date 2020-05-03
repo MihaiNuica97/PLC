@@ -6,4 +6,4 @@ print(z);
 // plm
 
 print(x[(y - 1)]);
-print(x[y]);
+print(x[(x.length()-(-1))]);

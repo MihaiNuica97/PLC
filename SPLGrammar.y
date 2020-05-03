@@ -93,7 +93,7 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     | '{' Exp '}'                                   { $2 }
 
     | int                                           { Type (Int $1) }
-    | int int                                       { Plus (Type (Int $1)) (Type (Int $2))}
+    | Exp int                                       { Plus $1 (Type (Int $2))}
     | bool                                          { Type (Bool $1)}
     | string                                        { Type (String $1)}
 
@@ -101,7 +101,7 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     | print '(' '[' ValList ']' ')' nl              { Print (Type (Arr $4))}
 
     | varName                                       { Lookup $1 }
-    | varName '[' int ']'                           { GetIndex $3 (Lookup $1)}
+    | varName '[' Exp ']'                           { GetIndex $3 (Lookup $1)}
     | var varName nl                                { Declare $2}
     | var varName '['']' nl                         { Declare $2}
     | var varName '=' '[' ValList ']' nl            { DeclareWithVal $2 (Type (Arr $5))}
@@ -147,7 +147,7 @@ data Exp = Type Type
         | Assign String Exp
         | Lookup String
 
-        |GetIndex Int Exp
+        |GetIndex Exp Exp
         |Length Exp
         
         | Print Exp
