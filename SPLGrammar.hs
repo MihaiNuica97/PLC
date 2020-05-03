@@ -16,7 +16,7 @@ data HappyAbsSyn t4 t5
 	| HappyAbsSyn6 (Exp)
 
 happyExpList :: Happy_Data_Array.Array Int Int
-happyExpList = Happy_Data_Array.listArray (0,375) ([15936,10304,92,16446,23592,32832,2047,0,0,0,0,0,0,0,0,8192,0,0,65,128,15872,10304,92,16446,23592,15872,10304,92,0,8,0,0,0,0,8,0,2048,0,0,0,48704,12287,16476,16446,23592,0,0,0,0,0,15936,10304,92,16446,23592,15872,10304,92,16446,23592,15872,10304,92,16446,23592,15872,10304,92,16446,23592,32256,10304,92,16446,23592,15872,10304,92,16446,23592,15872,10304,92,16446,23592,15872,10304,92,16446,23720,32768,18431,0,65408,23,0,0,0,0,512,15872,43072,92,2,0,16448,32768,0,0,0,15936,10304,92,64,0,15872,10304,92,0,0,0,0,0,16446,23720,0,0,1,0,256,32832,2047,0,14,0,0,2048,0,0,0,0,0,0,65408,23,3584,0,0,65408,23,32768,6143,0,31744,0,0,124,0,31744,6,0,1660,0,16384,0,0,64,0,16384,0,0,64,0,64512,7,0,2044,0,64512,7,0,0,0,0,32,0,8192,0,0,256,128,0,32768,0,0,128,0,16384,0,0,0,4096,0,0,256,0,0,0,0,0,64,0,16384,65408,7,3584,0,0,0,0,0,0,1,0,0,0,0,16384,0,0,0,0,0,0,0,3584,0,0,14,0,3584,0,0,0,16,15936,10304,16476,16446,23592,0,16384,0,0,64,64,0,0,0,0,0,0,0,0,0,0,0,16384,0,0,0,0,0,0,0,0,0,32,0,0,0,8192,16384,16446,23592,0,16384,0,0,0,0
+happyExpList = Happy_Data_Array.listArray (0,393) ([15936,10304,92,16446,23592,32832,2047,0,0,0,0,0,0,0,0,8192,0,0,65,128,15872,10304,92,16446,23592,15872,10304,92,0,8,0,0,0,0,8,0,2048,0,0,0,48704,12287,16476,16446,23592,0,0,0,0,0,15936,10304,92,16446,23592,15872,10304,92,16446,23592,15872,10304,92,16446,23592,15872,10304,92,16446,23592,32256,10304,92,16446,23592,15872,10304,92,16446,23592,15872,10304,92,16446,23592,15872,10304,92,16446,23720,32768,18431,0,65408,23,0,0,0,0,512,15872,43072,92,16446,23592,16448,32768,0,0,0,15936,10304,92,64,0,15872,10304,92,0,0,0,0,0,16446,23720,0,0,1,65408,263,32832,2047,0,14,0,0,2048,0,0,0,0,0,0,65408,23,3584,0,0,65408,23,32768,6143,0,31744,0,0,124,0,31744,6,0,1660,0,16384,0,0,64,0,16384,0,0,64,0,64512,7,0,2044,0,64512,7,0,0,0,0,32,0,8192,0,0,256,128,0,32768,0,0,128,0,16384,0,0,0,4096,0,0,256,0,0,0,0,0,64,0,16384,65408,7,3584,0,0,0,0,0,0,1,0,0,0,0,16384,0,0,0,0,0,0,0,3584,0,0,14,0,3584,0,0,0,16,15936,10304,16476,16446,23592,0,16384,0,0,64,64,0,0,0,0,0,0,0,0,0,0,0,16384,0,0,0,0,0,0,0,0,0,32,0,0,0,8192,16384,16446,23592,0,16384,0,0,0,0
 	])
 
 {-# NOINLINE happyExpListPerState #-}
@@ -499,7 +499,19 @@ action_40 (39) = happyShift action_14
 action_40 (6) = happyGoto action_52
 action_40 _ = happyFail (happyExpListPerState 40)
 
-action_41 (10) = happyShift action_51
+action_41 (10) = happyShift action_3
+action_41 (11) = happyShift action_4
+action_41 (12) = happyShift action_5
+action_41 (13) = happyShift action_6
+action_41 (14) = happyShift action_7
+action_41 (23) = happyShift action_8
+action_41 (28) = happyShift action_9
+action_41 (30) = happyShift action_10
+action_41 (35) = happyShift action_11
+action_41 (36) = happyShift action_12
+action_41 (37) = happyShift action_13
+action_41 (39) = happyShift action_14
+action_41 (6) = happyGoto action_51
 action_41 _ = happyFail (happyExpListPerState 41)
 
 action_42 (7) = happyShift action_48
@@ -567,6 +579,18 @@ action_49 _ = happyFail (happyExpListPerState 49)
 action_50 (33) = happyShift action_84
 action_50 _ = happyFail (happyExpListPerState 50)
 
+action_51 (16) = happyShift action_21
+action_51 (17) = happyShift action_22
+action_51 (18) = happyShift action_23
+action_51 (19) = happyShift action_24
+action_51 (20) = happyShift action_25
+action_51 (21) = happyShift action_26
+action_51 (22) = happyShift action_27
+action_51 (23) = happyShift action_45
+action_51 (24) = happyShift action_29
+action_51 (25) = happyShift action_30
+action_51 (26) = happyShift action_31
+action_51 (27) = happyShift action_32
 action_51 (33) = happyShift action_83
 action_51 _ = happyFail (happyExpListPerState 51)
 
@@ -1209,7 +1233,7 @@ happyReduction_34 _  = notHappyAtAll
 
 happyReduce_35 = happyReduce 4 6 happyReduction_35
 happyReduction_35 (_ `HappyStk`
-	(HappyTerminal (TokenInt _ happy_var_3)) `HappyStk`
+	(HappyAbsSyn6  happy_var_3) `HappyStk`
 	_ `HappyStk`
 	(HappyTerminal (TokenName _ happy_var_1)) `HappyStk`
 	happyRest)
@@ -1444,7 +1468,7 @@ data Exp = Type Type
         | Assign String Exp
         | Lookup String
 
-        |GetIndex Int Exp
+        |GetIndex Exp Exp
         |Length Exp
         
         | Print Exp

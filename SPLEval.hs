@@ -44,7 +44,7 @@ evalExpr (Print (Lookup exp)) stack = do
 
 evalExpr (Print (GetIndex x (Lookup name))) stack = do
     let foundVar = getVar name stack
-    let valueAtIndex = getIndex x foundVar
+    let valueAtIndex = getIndex (evalTerminalExpr (x,stack)) foundVar
     putStrLn (printVal valueAtIndex)
     return stack
 
@@ -73,7 +73,7 @@ evalExpr (DeclareWithVal name (Lookup varName)) stack =
     
 -- Declare with index of an array
 evalExpr (DeclareWithVal name (GetIndex i (Lookup arrName))) stack = 
-    evalExpr (DeclareWithVal name (Type (getIndex i (getVar arrName stack)))) stack
+    evalExpr (DeclareWithVal name (Type (getIndex (evalTerminalExpr (i,stack)) (getVar arrName stack)))) stack
     
 
 -- Declare with an absolute value
@@ -109,7 +109,7 @@ evalExpr (Assign name (Lookup varName)) stack =
 
 -- Assign with index of array
 evalExpr (Assign name (GetIndex i (Lookup arrName))) stack = 
-    evalExpr (Assign name (Type (getIndex i (getVar arrName stack)))) stack
+    evalExpr (Assign name (Type (getIndex (evalTerminalExpr (i,stack)) (getVar arrName stack)))) stack
 
 -- Assign with absolute value
 evalExpr (Assign name (Type value)) stack = do 
@@ -161,7 +161,7 @@ evalOp ((Div x1 x2),stack) = div (evalOp (x1,stack)) (evalOp (x2,stack))
 evalOp ((Type (Int x)),stack) = x
 evalOp ((Lookup name),stack) = evalOp ((Type (snd (getVar name stack))),stack)
 evalOp ((Length (Lookup name)),stack) = (arrLength 0 (getVar name stack))
-evalOp ((GetIndex index (Lookup arrName)),stack) = evalOp((Type (getIndex index (getVar arrName stack))),stack)
+evalOp ((GetIndex index (Lookup arrName)),stack) = evalOp((Type (getIndex (Int (evalOp (index,stack))) (getVar arrName stack))),stack)
 
 
 
@@ -172,7 +172,7 @@ evalBool (Type (Bool b),stack) = (Bool b)
 evalBool (Type (String s),stack) = (String s)
 evalBool (Type (Int x),stack) = (Int x)
 evalBool ((Length (Lookup name)),stack) = (Int (arrLength 0 (getVar name stack)))
-evalBool ((GetIndex index (Lookup arrName)),stack) = (getIndex index (getVar arrName stack))
+evalBool ((GetIndex index (Lookup arrName)),stack) = (getIndex (Int (evalOp (index,stack))) (getVar arrName stack))
 evalBool ((AND x1 x2),stack) = (andType ((evalBool(x1,stack)),(evalBool(x2,stack))))
 evalBool ((OR x1 x2),stack) = (orType ((evalBool(x1,stack)),(evalBool(x2,stack))))
 evalBool ((NOT exp),stack) =  negateType(evalBool(exp,stack))
@@ -229,15 +229,13 @@ getVar name stack = head(filter ((==name).fst) stack)
 
 
 -- Returns an element at index position in the array
-getIndex :: Int -> Map -> Type
-getIndex i (name,Arr (x:xs))
+getIndex :: Type -> Map -> Type
+getIndex (Int i) (name,Arr (x:xs))
     | i == 0 = x
     | i < 0 = NULL
-    | otherwise = (getIndex (i-1) (name, (Arr xs)))
-getIndex i (name, Arr []) = NULL
+    | otherwise = (getIndex (Int (i-1)) (name, (Arr xs)))
+getIndex (Int i) (name, Arr []) = NULL
 
--- getIndex :: Exp -> Type
--- getIndex x = NULL
 
 -- Returns array length
 arrLength :: Int -> Map -> Int
