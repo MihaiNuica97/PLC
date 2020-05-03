@@ -1,7 +1,10 @@
-if(true)
+var x = true;
+var y  = readLine;
+print(y);
+if(!x)
 {
     print(true);
-    
+
 }
 else
 {
@@ -9,3 +12,4 @@ else
     print("123");
 }
 print("PLM");
+print(y);

@@ -20,9 +20,15 @@ evalExpr (Print (Lookup exp)) stack = do
     return stack
 
 --Handles if else statements
+evalExpr (IfElse (Lookup name) exps1 exps2) stack 
+    | (snd (getVar name stack)) == (Bool True) = (eval exps1 stack)
+    | otherwise = (eval exps2 stack)
+
 evalExpr (IfElse cond exps1 exps2) stack 
     | (evalTerminalExpr (cond,stack)) == (Bool True) = (eval exps1 stack)
     | otherwise = (eval exps2 stack)
+
+
        
         --tried doing list comprehension on all expresions e.g [evalExpr e stack | e <- exps1]
 
@@ -81,7 +87,7 @@ evalExpr (Assign name exp) stack =
 --Read and print out a single line e.g. readLine;
 evalExpr (readLine) stack = do
     line <- getLine
-    putStrLn("line read" ++ line)
+    putStrLn("line read " ++ line)
     return stack
 
 

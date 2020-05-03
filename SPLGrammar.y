@@ -81,7 +81,7 @@ Exp : Exp '+' Exp            { Plus $1 $3 }
     | var varName nl         { Declare $2}
     | varName '=' Exp nl     { Assign $1 $3}
     | var varName '=' Exp nl { DeclareWithVal $2 $4}
-    | readLine nl               { ReadLine }
+    | readLine            { ReadLine }
     | if '(' Exp ')' '{' Exps '}' else '{' Exps '}'  { IfElse $3 $6 $10} 
 
 { 

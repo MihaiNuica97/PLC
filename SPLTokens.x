@@ -6,7 +6,7 @@ module SPLTokens where
 $digit = 0-9
 -- digits      
 $alpha = [a-zA-Z]    
--- alphabetic characters
+-- alphabetic characters 
 
 $quote = \"
 
