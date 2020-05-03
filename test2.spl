@@ -1,9 +1,0 @@
-var x = 5;
-
-if (x == 6) {
-    print(10);
-    print(20);
-} else {
-    print(30);
-    print(40);
-}

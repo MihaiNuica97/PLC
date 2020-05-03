@@ -1,19 +1,21 @@
-Array stream1 = readFile(left);
-Array stream2 = readFile(middle);
-Array stream3 = readFile(right);
-Array output = [];
+var stream1[];
+var stream2[]; 
+var stream3[]; 
 
-while(stream.nextInput != null) {
-    a = stream1.pop();
-    b = stream2.pop();
-    c = stream3.pop();
+line[] = readLine;
 
-    output.push(c);
-    output.push(b);
-    output.push(a);
-    output.push(a+b);
-    output.push(b+c);
+while(a == 5) {
+    var a = line[0];
+    var b = line[1];
+    var c = line[2];
+
+    print(c);
+    print(b);
+    print(a);
+    print(a+b);
+    print(b+c);
+
+    line[] = readLine;
 }
 
-write.output;
 

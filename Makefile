@@ -6,7 +6,7 @@
 #   
 
 # Files that need to be generated from other files
-DEPEND += Tokens.hs Grammar.hs Eval.hs
+DEPEND += SPLTokens.hs SPLGrammar.hs SPLEval.hs
 
 # When "make" is invoked with no arguments, we build an executable after building everything that it depends on
 all: $(DEPEND) myinterpreter
@@ -16,17 +16,17 @@ myinterpreter: $(DEPEND) Main.hs
 	ghc -o myinterpreter Main.hs
 
 # Generate ML files from a parser definition file
-Grammar.hs : Grammar.y
-	@rm -f Grammar.hs
+SPLGrammar.hs : SPLGrammar.y
+	@rm -f SPLGrammar.hs
 	happy Grammar.y
-	@chmod -w Grammar.hs
+	@chmod -w SPLGrammar.hs
 
 # Generate ML files from a lexer definition file
-Tokens.hs : Tokens.x
-	@rm -f Tokens.hs
-	alex Tokens.x
-	@chmod -w Tokens.hs
+SPLTokens.hs : SPLTokens.x
+	@rm -f SPLTokens.hs
+	alex SPLTokens.x
+	@chmod -w SPLTokens.hs
 
 # Clean up the directory
 clean::
-	rm -rf Tokens.hs Grammar.hs *.hi *.o *.info myinterpreter
+	rm -rf SPLTokens.hs SPLGrammar.hs *.hi *.o *.info myinterpreter

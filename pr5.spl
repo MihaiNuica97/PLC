@@ -1,10 +1,9 @@
-Array[] stream;
-int accumulator = 0;
+var accumulator = 0;
+var line = readLine;
 
-while(a != null ) {
-    int a = stream.pop();
-    accumulator = accumulator + a
-    output.push(accumulator);
+while(line.length() > 0) {
+    var a = line[0];
+    var line = readLine;
+    accumulator = (accumulator + a);
+    print(accumulator);
 }
-
-write.output;

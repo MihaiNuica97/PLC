@@ -1,46 +1,22 @@
-----
-Mihai's pseucode
-----
-
-Array left[];
-var right[];
-
-
-while(nextInput != null){
-    left.push(readFile);
-    right.push(readFile);
-    left.push(readFile);
-    right.push(readFile);
-
-    write(first(left));
-    write(first(left));
-    write(first(right));
-}
-
-
-----
-Reece's alternative pseucode
-----
-
 var stream1[];
-var stream2;[]
+var stream2;[];
 var line[];
-line = readLine;
+line[] = readLine;
 
 while(line != null) {
-    int a = line[0]
-    int b = readInt(1);
+    var a = line[0]
+    var b = readInt(1);
     stream1.push(a);
     stream2.push(b);
 
-    line = readLine;
-    int c = line[0];
-    int d = line[1];
+    line[] = readLine;
+    var c = line[0];
+    var d = line[1];
     stream1.push(c);
     stream2.push(d);
 
     print(stream1.pop())
     print(stream1.pop())
     print(stream2.pop())
-    line = readLine;
+    line[] = readLine;
 }

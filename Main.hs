@@ -5,7 +5,6 @@ import System.Environment
 import Control.Exception
 import System.IO
 import Data.List
-
 --main method code adapted from Julians provided tutorials
 
 main :: IO ([Map])
@@ -14,34 +13,25 @@ main = catch main' noParse
 
 main' = do (fileName : _ ) <- getArgs 
            sourceText <- readFile fileName
-           putStrLn ("Parsing from file : " ++ fileName ++ "\n" ++ sourceText)
+           --putStrLn ("Parsing from file : " ++ fileName ++ "\n" ++ sourceText)
            let tokens = alexScanTokens sourceText
-           putStrLn ("Tokens : " ++ (show tokens))
+           --putStrLn ("Tokens : " ++ (show tokens))
            let parsedProg = (parseCalc tokens)
-           putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
-
-           --this is to accept file contents from stdin and 
-           {- contents <- getContents 
-           let ints = convertToMatrix (lines contents) --converts to a matrix
-           putStrLn ("Loaded contents of text file as a matrix: " ++ (show ints))
-           
-           --tranposes matrix e.g [[row1], [row2]...] -> [[col1], [col2]...]
-           let streams = transpose (ints)
-           putStrLn ("Tranposing matrix to represent vertical streams " ++ (show streams))
-           -}
-
-           --contents <- getContents
-           --delivers a list of lines into CEK machine
+           --putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
            eval parsedProg []
         
-           --do something to spit out result
 
         
 noParse :: ErrorCall -> IO ([Map])
 noParse e = do let err =  show e
                hPutStr stderr err
                return ([])
+
+
+
+
  
+{-
 --Creates a matrix of [[row1], [row2], [row3]...]
 convertToMatrix :: [String] -> [[Int]]
 convertToMatrix [] = []
@@ -51,3 +41,16 @@ convertToMatrix (x:xs) = (convertRow $ words x) : (convertToMatrix xs)
 convertRow :: [String] -> [Int]
 convertRow [] = []
 convertRow (x:xs) = [(read x :: Int)] ++ convertRow xs
+
+-this is to accept file contents from stdin and - goes in main method
+
+contents <- getContents 
+let ints = convertToMatrix (lines contents) --converts to a matrix
+putStrLn ("Loaded contents of text file as a matrix: " ++ (show ints))
+
+--tranposes matrix e.g [[row1], [row2]...] -> [[col1], [col2]...]
+let streams = transpose (ints)
+putStrLn ("Tranposing matrix to represent vertical streams " ++ (show streams))
+-}
+
+        

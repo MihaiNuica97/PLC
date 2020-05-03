@@ -1,17 +1,20 @@
-Array[] stream1 = readFile(left);
-Array[] stream2 = readFile(right);
-Array[] output = [];
+var stream1[];
+var stream2[];
 
-output.push(0);
+print(0);
 
-while(a != null && b != null) {
-    int a = stream1.pop();
-    stream2.pop();
-    int b = stream2.pop();
+line[] = readLine;
+
+while(line != null) {
+    var a = line[0];
+    stream1.push(a);
+
+    line[] = readLine;
+    var a = stream1.push(a);
+    var b = line[1]
     
+    print(stream1.pop());
+    print(b);
 
-    output.push(b);
-    output.push(a);
+    line[] = readLine;
 }
-
-write.output;
