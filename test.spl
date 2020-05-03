@@ -1,9 +1,9 @@
-var x = readLine;
-var y = x.length() - 1;
-var z = 2/2;
+var x = [1,5];
+var y = 0;
+var z = 6;
 
-print(z);
-// plm
+ x[y] = z;
 
-print(x[(y - 1)]);
-print(x[(x.length()-(-1))]);
+//  (Arr [type])
+
+ print(x);

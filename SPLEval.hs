@@ -104,6 +104,17 @@ evalExpr (DeclareWithVal name exp) stack =
 
 -- Assigns new value to already declared variable
 -- Does NOT check if variable is already declared
+
+evalExpr (AssignArr name (Type (Int index)) (Type value)) stack = do 
+    let foundVar = getVar name stack
+    let array = getArrayVal (snd foundVar)
+    let stack' = assignVar name (Arr (replaceAtIndex index array value )) stack
+    return stack'
+
+evalExpr (AssignArr name exp1 exp2) stack =
+    evalExpr (AssignArr name(Type (evalTerminalExpr (exp1,stack))) (Type (evalTerminalExpr (exp2,stack))) ) stack
+
+
 evalExpr (Assign name (Lookup varName)) stack = 
     evalExpr (Assign name (Type (snd (getVar varName stack)))) stack
 
@@ -236,6 +247,14 @@ getIndex (Int i) (name,Arr (x:xs))
     | otherwise = (getIndex (Int (i-1)) (name, (Arr xs)))
 getIndex (Int i) (name, Arr []) = NULL
 
+replaceAtIndex:: Int -> [Type] -> Type -> [Type]
+replaceAtIndex index arr val = (merge ((fst (splitAt (index) arr))++[val]) (tail(snd(splitAt (index) arr))))
+
+
+merge :: [Type] -> [Type] -> [Type]
+merge xs     []     = xs
+merge []     ys     = ys
+merge (x:xs) (y:ys) = x : y : merge xs ys
 
 -- Returns array length
 arrLength :: Int -> Map -> Int
@@ -258,6 +277,8 @@ printVal (Int i) = show i
 printVal (String s) = s
 printVal (NULL) = show NULL
 
+getArrayVal :: Type -> [Type]
+getArrayVal (Arr arr) = arr
 
 -- Prints out array
 printArr :: [Type] -> String
