@@ -9,6 +9,7 @@ import SPLTokens
 %token 
     nl          { TokenNewLine _}
     ','         { TokenComma _ }
+    '.'         { TokenDot _ }
     int         { TokenInt _ $$ }
     bool        { TokenBool _ $$}
     string      { TokenString _ $$}
@@ -33,6 +34,9 @@ import SPLTokens
     '}'         { TokenRCurly _ }
     '['         {TokenLStraight _}
     ']'         {TokenRStraight _}
+
+    length      {TokenLength _ }
+
     print       { TokenPrint _}
     readLine    { TokenReadLine _}
     if          { TokenIf _ }
@@ -73,6 +77,7 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     | Exp '/' Exp                                   { Div $1 $3 }
 
     | Exp '==' Exp                                  { IsEq $1 $3}
+    | Exp not '=' Exp                               { NOT (IsEq $1 $4)}
     | Exp '<' Exp                                   { IsLess $1 $3}
     | Exp '>' Exp                                   { IsMore $1 $3}
     | Exp '<=' Exp                                  { OR (IsLess $1 $3) (IsEq $1 $3)}
@@ -100,6 +105,8 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     | varName '=' Exp nl                            { Assign $1 $3}
     | varName '=' '[' ValList ']' nl                { Assign $1 (Type (Arr $4))}
     | var varName '=' Exp nl                        { DeclareWithVal $2 $4}
+
+    | varName '.' length '('')'                           {Length (Lookup $1)}
 
     | readLine                                      { ReadLine }
     
@@ -136,6 +143,7 @@ data Exp = Type Type
         | Lookup String
 
         |GetIndex Int Exp
+        |Length Exp
         
         | Print Exp
         | ReadLine

@@ -132,6 +132,7 @@ evalOp ((Times x1 x2),stack) = (evalOp (x1,stack)) * (evalOp (x2,stack))
 evalOp ((Div x1 x2),stack) = div (evalOp (x1,stack)) (evalOp (x2,stack))
 evalOp ((Type (Int x)),stack) = x
 evalOp ((Lookup name),stack) = evalOp ((Type (snd (getVar name stack))),stack)
+evalOp ((Length (Lookup name)),stack) = (arrLength 0 (getVar name stack))
 evalOp ((GetIndex index (Lookup arrName)),stack) = evalOp((Type (getIndex index (getVar arrName stack))),stack)
 -- Boolean operations
 evalBool :: (Exp,Stack) -> Type
@@ -139,6 +140,7 @@ evalBool (Type (NULL),stack) = NULL
 evalBool (Type (Bool b),stack) = (Bool b)
 evalBool (Type (String s),stack) = (String s)
 evalBool (Type (Int x),stack) = (Int x)
+evalBool ((Length (Lookup name)),stack) = (Int (arrLength 0 (getVar name stack)))
 evalBool ((GetIndex index (Lookup arrName)),stack) = (getIndex index (getVar arrName stack))
 evalBool ((AND x1 x2),stack) = (andType ((evalBool(x1,stack)),(evalBool(x2,stack))))
 evalBool ((OR x1 x2),stack) = (orType ((evalBool(x1,stack)),(evalBool(x2,stack))))
@@ -199,6 +201,10 @@ getIndex i (name,Arr (x:xs))
     | i < 0 = NULL
     | otherwise = (getIndex (i-1) (name, (Arr xs)))
 getIndex i (name, Arr []) = NULL
+
+arrLength :: Int -> Map -> Int
+arrLength i (name, Arr (x:xs)) = arrLength (i+1) (name,Arr xs)
+arrLength i (name, Arr []) = i
 
 
 -- returns value stored in a variable as a String 
