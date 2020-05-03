@@ -102,10 +102,18 @@ evalExpr (DeclareWithVal name ReadLine) stack = do
 evalExpr (DeclareWithVal name exp) stack = 
     evalExpr(DeclareWithVal name (Type (evalTerminalExpr (exp,stack)))) stack
 
--- Assigns new value to already declared variable
--- Does NOT check if variable is already declared
--- evalExpr (Push (Type newVal)(Lookup name)) stack = do
 
+-- Operations on arrays
+evalExpr (Push (Type newVal)(Lookup name)) stack = do 
+    let foundVar = getVar name stack
+    let array = getArrayVal (snd foundVar)
+    let newArray = push newVal array
+    let newVar = Arr newArray
+    let stack' = assignVar name newVar stack
+    return stack'
+
+evalExpr (Push exp1 exp2) stack = 
+    evalExpr (Push (Type (evalTerminalExpr (exp1,stack))) exp2 ) stack
 
 evalExpr (AssignArr name (Type (Int index)) (Type value)) stack = do 
     let foundVar = getVar name stack
@@ -116,7 +124,8 @@ evalExpr (AssignArr name (Type (Int index)) (Type value)) stack = do
 evalExpr (AssignArr name exp1 exp2) stack =
     evalExpr (AssignArr name(Type (evalTerminalExpr (exp1,stack))) (Type (evalTerminalExpr (exp2,stack))) ) stack
 
-
+-- Assigns new value to already declared variable
+-- Does NOT check if variable is already declared
 evalExpr (Assign name (Lookup varName)) stack = 
     evalExpr (Assign name (Type (snd (getVar varName stack)))) stack
 
@@ -152,6 +161,9 @@ evalExpr (readLine) stack = do
     putStrLn(line)
     return stack
 
+push:: Type -> [Type] -> [Type]
+push val (x:xs) =((x:xs)++[val])
+push val [] = [val]
 
 -- General Operations
 evalTerminalExpr:: (Exp,Stack) -> Type
