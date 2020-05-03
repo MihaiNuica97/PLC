@@ -27,30 +27,3 @@ noParse e = do let err =  show e
                hPutStr stderr err
                return ([])
 
-
-
-
- 
-{-
---Creates a matrix of [[row1], [row2], [row3]...]
-convertToMatrix :: [String] -> [[Int]]
-convertToMatrix [] = []
-convertToMatrix (x:xs) = (convertRow $ words x) : (convertToMatrix xs)
-
---converts a single line/row to a list of ints USE OF READ IS NON LAZY
-convertRow :: [String] -> [Int]
-convertRow [] = []
-convertRow (x:xs) = [(read x :: Int)] ++ convertRow xs
-
--this is to accept file contents from stdin and - goes in main method
-
-contents <- getContents 
-let ints = convertToMatrix (lines contents) --converts to a matrix
-putStrLn ("Loaded contents of text file as a matrix: " ++ (show ints))
-
---tranposes matrix e.g [[row1], [row2]...] -> [[col1], [col2]...]
-let streams = transpose (ints)
-putStrLn ("Tranposing matrix to represent vertical streams " ++ (show streams))
--}
-
-        

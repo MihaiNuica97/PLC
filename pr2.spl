@@ -1,10 +1,10 @@
-var stream1[];
-var stream2[]; 
-var stream3[]; 
+var stream1;
+var stream2; 
+var stream3; 
 
-line[] = readLine;
+line = readLine;
 
-while(a == 5) {
+while(line.length() > 0) {
     var a = line[0];
     var b = line[1];
     var c = line[2];
@@ -15,7 +15,5 @@ while(a == 5) {
     print(a+b);
     print(b+c);
 
-    line[] = readLine;
+    line = readLine;
 }
-
-

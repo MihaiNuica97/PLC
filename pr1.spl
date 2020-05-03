@@ -1,7 +1,7 @@
-var stream1[];
-var stream2;[];
-var line[];
-line[] = readLine;
+var stream1;
+var stream2;
+var line;
+line = readLine;
 
 while(line != null) {
     var a = line[0]
@@ -9,7 +9,7 @@ while(line != null) {
     stream1.push(a);
     stream2.push(b);
 
-    line[] = readLine;
+    line = readLine;
     var c = line[0];
     var d = line[1];
     stream1.push(c);
@@ -18,5 +18,5 @@ while(line != null) {
     print(stream1.pop())
     print(stream1.pop())
     print(stream2.pop())
-    line[] = readLine;
+    line = readLine;
 }

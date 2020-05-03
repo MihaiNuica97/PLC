@@ -2,7 +2,7 @@ var line = readLine;
 
 while(line.length() > 0) {
 
-    var a = line[0];
+    var a = line[0]; 
     var line = readLine;
     var b = line[0];
     var line = readLine;
@@ -10,7 +10,7 @@ while(line.length() > 0) {
 
     print(c);
     print(2*b);
-    print(3*a - 1);
+    print(3*a - 1); 
 
     var line = readLine;
 }

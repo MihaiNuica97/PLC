@@ -1,20 +1,20 @@
-var stream1[];
-var stream2[];
+var stream1;
+var stream2;
 
 print(0);
 
-line[] = readLine;
+line = readLine;
 
-while(line != null) {
+while(line.length() > 0) {
     var a = line[0];
     stream1.push(a);
 
-    line[] = readLine;
+    line = readLine;
     var a = stream1.push(a);
     var b = line[1]
     
     print(stream1.pop());
     print(b);
 
-    line[] = readLine;
+    line = readLine;
 }
