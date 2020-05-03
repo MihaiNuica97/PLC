@@ -16,13 +16,13 @@ import SPLTokens
     varName     { TokenName _ $$ }
     '='         { TokenEq _ }
     '=='        { TokenIsEq _} 
-    and     {TokenAND _}
-    or      {TokenOR _}
-    '<'    {TokenLess _}
-    '>'    {TokenMore _}
-    '<='    {TokenLessEq _}
-    '>='    {TokenMoreEq _}
-    not     {TokenNOT _}
+    and         {TokenAND _}
+    or          {TokenOR _}
+    '<'         {TokenLess _}
+    '>'         {TokenMore _}
+    '<='        {TokenLessEq _}
+    '>='        {TokenMoreEq _}
+    not         {TokenNOT _}
     '+'         { TokenPlus _ } 
     '-'         { TokenMinus _ } 
     '*'         { TokenTimes _ } 
@@ -52,50 +52,57 @@ import SPLTokens
 
 
 Exps : Exp nl Exps      { $1 : $3 }
-    | nl Exps         { $2 }
+    | nl Exps           { $2 }
     | Exp Exps          {$1 : $2}
-    | Exp             { [$1] }
+    | Exp               { [$1] }
     | {- empty -}		{ [] }
 
-ValList: int ',' ValList    {(Int $1) : $3}
+ValList: int ',' ValList        {(Int $1) : $3}
         | string ',' ValList    {(String $1) : $3}
-        | bool ',' ValList    {(Bool $1) : $3}
-        | int                {[Int $1]}
-        | string             {[String $1]}
-        | bool               {[Bool $1]}
-        |                    {[]}
+        | bool ',' ValList      {(Bool $1) : $3}
+        | int                   {[Int $1]}
+        | string                {[String $1]}
+        | bool                  {[Bool $1]}
+        |                       {[]}
 
 
 Exp :: {Exp}
-Exp : Exp '+' Exp            { Plus $1 $3 } 
-    | Exp '-' Exp            { Minus $1 $3 } 
-    | Exp '*' Exp            { Times $1 $3 } 
-    | Exp '/' Exp            { Div $1 $3 } 
-    | Exp '==' Exp           { IsEq $1 $3}
-    | Exp '<' Exp            { IsLess $1 $3}
-    | Exp '>' Exp            { IsMore $1 $3}
-    | Exp '<=' Exp           { OR (IsLess $1 $3) (IsEq $1 $3)}
-    | Exp '>=' Exp           { OR (IsMore $1 $3) (IsEq $1 $3)}
-    | Exp and Exp            { AND $1 $3}
-    | Exp or Exp             { OR $1 $3}
-    | not Exp                { NOT $2}                           
-    | '(' Exp ')'            { $2 } 
-    | '{' Exp '}'            { $2 }
-    | int                    { Type (Int $1) }
-    | int int                { Plus (Type (Int $1)) (Type (Int $2))}
-    | bool                   { Type (Bool $1)}
-    | string                 { Type (String $1)}
-    | print '('Exp')'  nl    { Print $3 }
-    | print '(' '[' ValList ']' ')' nl  {Print (Type (Arr $4))}
-    | varName                { Lookup $1 }
-    | var varName nl         { Declare $2}
-    | var varName '['']' nl  {Declare $2}
-    | var varName '=' '[' ValList ']' nl { DeclareWithVal $2 (Type (Arr $5))}
-    | varName '=' Exp nl     { Assign $1 $3}
-    | varName '=' '[' ValList ']' nl     { Assign $1 (Type (Arr $4))}
-    | var varName '=' Exp nl { DeclareWithVal $2 $4}
-    | readLine            { ReadLine }
-    | if '(' Exp ')' '{' Exps '}' else '{' Exps '}'  { IfElse $3 $6 $10} 
+Exp : Exp '+' Exp                                   { Plus $1 $3 } 
+    | Exp '-' Exp                                   { Minus $1 $3 } 
+    | Exp '*' Exp                                   { Times $1 $3 } 
+    | Exp '/' Exp                                   { Div $1 $3 }
+
+    | Exp '==' Exp                                  { IsEq $1 $3}
+    | Exp '<' Exp                                   { IsLess $1 $3}
+    | Exp '>' Exp                                   { IsMore $1 $3}
+    | Exp '<=' Exp                                  { OR (IsLess $1 $3) (IsEq $1 $3)}
+    | Exp '>=' Exp                                  { OR (IsMore $1 $3) (IsEq $1 $3)}
+    | Exp and Exp                                   { AND $1 $3}
+    | Exp or Exp                                    { OR $1 $3}
+    | not Exp                                       { NOT $2}                 
+
+    | '(' Exp ')'                                   { $2 } 
+    | '{' Exp '}'                                   { $2 }
+
+    | int                                           { Type (Int $1) }
+    | int int                                       { Plus (Type (Int $1)) (Type (Int $2))}
+    | bool                                          { Type (Bool $1)}
+    | string                                        { Type (String $1)}
+
+    | print '('Exp')'  nl                           { Print $3 }
+    | print '(' '[' ValList ']' ')' nl              { Print (Type (Arr $4))}
+
+    | varName                                       { Lookup $1 }
+    | var varName nl                                { Declare $2}
+    | var varName '['']' nl                         { Declare $2}
+    | var varName '=' '[' ValList ']' nl            { DeclareWithVal $2 (Type (Arr $5))}
+    | varName '=' Exp nl                            { Assign $1 $3}
+    | varName '=' '[' ValList ']' nl                { Assign $1 (Type (Arr $4))}
+    | var varName '=' Exp nl                        { DeclareWithVal $2 $4}
+
+    | readLine                                      { ReadLine }
+    
+    | if '(' Exp ')' '{' Exps '}' else '{' Exps '}' { IfElse $3 $6 $10} 
 
 { 
 
