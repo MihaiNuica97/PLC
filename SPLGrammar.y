@@ -35,7 +35,11 @@ import SPLTokens
     '['         { TokenLStraight _}
     ']'         { TokenRStraight _}
 
-    length      { TokenLength _ }
+    length      {TokenLength _ }
+    pop         {TokenPop _}
+    push        {TokenPush _}
+    enq         {TokenEnQ _}
+    deq         {TokenDeQ _}
 
     print       { TokenPrint _}
     readLine    { TokenReadLine _}
@@ -102,7 +106,7 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
 
     | varName                                       { Lookup $1 }
     | varName '[' Exp ']'                           { GetIndex $3 (Lookup $1)}
-    | varName '[' Exp ']' '=' Exp  nl                 { AssignArr $1 $3 $6}
+    | varName '[' Exp ']' '=' Exp  nl               { AssignArr $1 $3 $6}
     | var varName nl                                { Declare $2}
     | var varName '['']' nl                         { Declare $2}
     | var varName '=' '[' ValList ']' nl            { DeclareWithVal $2 (Type (Arr $5))}
@@ -111,6 +115,12 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     | var varName '=' Exp nl                        { DeclareWithVal $2 $4}
 
     | varName '.' length '('')'                     {Length (Lookup $1)}
+    
+    | varName '.' pop '('')'                        {Pop (Lookup $1)}
+    | varName '.' deq '('')'                        {DeQ (Lookup $1)}
+
+    |varName '.' push '('Exp')'                     {Push $5 (Lookup $1)}
+    |varName '.' enq '('Exp')'                      {EnQ $5 (Lookup $1)}
 
     | readLine                                      { ReadLine }
     
@@ -150,6 +160,12 @@ data Exp = Type Type
 
         |GetIndex Exp Exp
         |Length Exp
+        
+        |Pop Exp
+        |DeQ Exp
+
+        |Push Exp Exp
+        |EnQ Exp Exp
         
         | Print Exp
         | ReadLine

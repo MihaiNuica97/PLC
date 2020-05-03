@@ -9,10 +9,12 @@ $alpha = [a-zA-Z]
 -- alphabetic characters 
 
 $quote = \"
+$fwdslash = \/
 
 tokens :-
   $white+       ; 
-  \"/"\"/".*      ;
+  $fwdslash $fwdslash.* ;
+  "--".* ;
   [\;]+                           { tok (\p s -> TokenNewLine p)}
   [\-]?$digit+                    { tok (\p s -> TokenInt p (read s)) }
   $quote .* $quote                { tok (\p s -> TokenString p (tail (init s))) }
@@ -41,6 +43,10 @@ tokens :-
   \,                              { tok (\p s -> TokenComma p) }
   \.                              { tok (\p s -> TokenDot p) }
   length                          { tok (\p s -> TokenLength p) }
+  push                            { tok (\p s -> TokenPush p) }
+  pop                             { tok (\p s -> TokenPop p) }
+  enQ                             { tok (\p s -> TokenEnQ p) }
+  deQ                             { tok (\p s -> TokenDeQ p) }
   print                           { tok (\p s -> TokenPrint p)} 
   readLine                        { tok (\p s -> TokenReadLine p)}
   if                              { tok (\p s -> TokenIf p) }
@@ -85,6 +91,10 @@ data Token =
   TokenDot AlexPosn            |
   TokenNewLine AlexPosn        |
   TokenLength AlexPosn         |
+  TokenPush AlexPosn           |
+  TokenPop AlexPosn            |
+  TokenEnQ AlexPosn            |
+  TokenDeQ AlexPosn            |
   TokenPrint AlexPosn          |
   TokenReadLine AlexPosn       |
   TokenIf AlexPosn             |
@@ -129,6 +139,11 @@ tokenPosn (TokenComma (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenDot (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 
 tokenPosn (TokenLength (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenPop (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenPush (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenEnQ (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenDeQ (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+
 
 tokenPosn (TokenPrint (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenNewLine (AlexPn a l c)) = show(l) ++ ":" ++ show(c)

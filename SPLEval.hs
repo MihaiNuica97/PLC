@@ -104,6 +104,8 @@ evalExpr (DeclareWithVal name exp) stack =
 
 -- Assigns new value to already declared variable
 -- Does NOT check if variable is already declared
+-- evalExpr (Push (Type newVal)(Lookup name)) stack = do
+
 
 evalExpr (AssignArr name (Type (Int index)) (Type value)) stack = do 
     let foundVar = getVar name stack
