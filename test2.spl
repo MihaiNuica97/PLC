@@ -9,7 +9,9 @@ while(line.length() != 0) {
     var c = line[0];
     var line = readLine;
 
-    print(c);
-    print(2*b);
-    print((3*a) - 1); 
+    if (line.length() != 0) {
+        print(c);
+        print(2*b);
+        print((3*a) - 1); 
+    }
 }
