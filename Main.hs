@@ -20,7 +20,6 @@ main' = do (fileName : _ ) <- getArgs
            --putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
            eval parsedProg []
         
-
         
 noParse :: ErrorCall -> IO ([Map])
 noParse e = do let err =  show e
