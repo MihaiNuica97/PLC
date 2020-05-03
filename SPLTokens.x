@@ -45,6 +45,7 @@ tokens :-
   readLine                        { tok (\p s -> TokenReadLine p)}
   if                              { tok (\p s -> TokenIf p) }
   else                            { tok (\p s -> TokenElse p) }  
+  while                           { tok (\p s -> TokenWhile p) } 
   $alpha [$alpha $digit \_ \’]*   { tok (\p s -> TokenName p s) }
 
 {
@@ -87,7 +88,8 @@ data Token =
   TokenPrint AlexPosn          |
   TokenReadLine AlexPosn       |
   TokenIf AlexPosn             |
-  TokenElse AlexPosn           
+  TokenElse AlexPosn           |
+  TokenWhile AlexPosn
     deriving (Eq, Show)
 
 
@@ -134,4 +136,7 @@ tokenPosn (TokenReadLine (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 
 tokenPosn (TokenIf (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenElse (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+
+tokenPosn (TokenWhile (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+
 }

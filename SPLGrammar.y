@@ -42,6 +42,8 @@ import SPLTokens
     if          { TokenIf _ }
     else        { TokenElse _ }
 
+    while       {TokenWhile _ }
+
     %left '==' and or
     %left '+' '-' 
     %left '*' '/' 
@@ -52,6 +54,7 @@ import SPLTokens
     %nonassoc int string true false var '(' ')'
     %nonassoc print readLine
     %nonassoc if else
+    %nonassoc while
 %% 
 
 
@@ -112,6 +115,8 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     
     | if '(' Exp ')' '{' Exps '}' else '{' Exps '}' { IfElse $3 $6 $10} 
     | if '(' Exp ')' '{' Exps '}'                   { IfElse $3 $6 []}
+    
+    | while '(' Exp ')' '{' Exps '}'                { While $3 $6}
 
 { 
 
@@ -148,5 +153,7 @@ data Exp = Type Type
         | Print Exp
         | ReadLine
         | IfElse Exp [Exp] [Exp]
+
+        |While Exp [Exp]
          deriving Show 
 }

@@ -26,6 +26,12 @@ evalExpr (IfElse cond exps1 exps2) stack
     | (evalTerminalExpr (cond,stack)) == (Bool True) = (eval exps1 stack)
     | otherwise = (eval exps2 stack)
 
+evalExpr (While cond exps) stack
+    | (evalTerminalExpr (cond,stack)) == (Bool True) = 
+        do
+            newStack <- eval exps stack
+            evalExpr (While cond exps) newStack
+    | otherwise = eval [] stack 
 
 
 -- output to console
