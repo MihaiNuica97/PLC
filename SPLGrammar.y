@@ -102,6 +102,7 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
 
     | varName                                       { Lookup $1 }
     | varName '[' Exp ']'                           { GetIndex $3 (Lookup $1)}
+    | varName '[' Exp ']' '=' Exp  nl                 { AssignArr $1 $3 $6}
     | var varName nl                                { Declare $2}
     | var varName '['']' nl                         { Declare $2}
     | var varName '=' '[' ValList ']' nl            { DeclareWithVal $2 (Type (Arr $5))}
@@ -145,6 +146,7 @@ data Exp = Type Type
         | Declare String 
         | DeclareWithVal String Exp
         | Assign String Exp
+        | AssignArr String Exp Exp
         | Lookup String
 
         |GetIndex Exp Exp
