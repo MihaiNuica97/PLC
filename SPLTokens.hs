@@ -11,6 +11,7 @@ module SPLTokens where
 #endif
 #if __GLASGOW_HASKELL__ >= 503
 import Data.Array
+import Data.Array.Base (unsafeAt)
 #else
 import Array
 #endif
@@ -20,6 +21,7 @@ import Array
 --
 -- This code is in the PUBLIC DOMAIN; you may copy it freely and use
 -- it for any purpose whatsoever.
+
 
 
 
@@ -47,30 +49,24 @@ import qualified Data.Bits
 
 -- | Encode a Haskell String to a list of Word8 values, in UTF8 format.
 utf8Encode :: Char -> [Word8]
-utf8Encode = uncurry (:) . utf8Encode'
-
-utf8Encode' :: Char -> (Word8, [Word8])
-utf8Encode' c = case go (ord c) of
-                  (x, xs) -> (fromIntegral x, map fromIntegral xs)
+utf8Encode = map fromIntegral . go . ord
  where
   go oc
-   | oc <= 0x7f       = ( oc
-                        , [
-                        ])
+   | oc <= 0x7f       = [oc]
 
-   | oc <= 0x7ff      = ( 0xc0 + (oc `Data.Bits.shiftR` 6)
-                        , [0x80 + oc Data.Bits..&. 0x3f
-                        ])
-
-   | oc <= 0xffff     = ( 0xe0 + (oc `Data.Bits.shiftR` 12)
-                        , [0x80 + ((oc `Data.Bits.shiftR` 6) Data.Bits..&. 0x3f)
+   | oc <= 0x7ff      = [ 0xc0 + (oc `Data.Bits.shiftR` 6)
                         , 0x80 + oc Data.Bits..&. 0x3f
-                        ])
-   | otherwise        = ( 0xf0 + (oc `Data.Bits.shiftR` 18)
-                        , [0x80 + ((oc `Data.Bits.shiftR` 12) Data.Bits..&. 0x3f)
+                        ]
+
+   | oc <= 0xffff     = [ 0xe0 + (oc `Data.Bits.shiftR` 12)
                         , 0x80 + ((oc `Data.Bits.shiftR` 6) Data.Bits..&. 0x3f)
                         , 0x80 + oc Data.Bits..&. 0x3f
-                        ])
+                        ]
+   | otherwise        = [ 0xf0 + (oc `Data.Bits.shiftR` 18)
+                        , 0x80 + ((oc `Data.Bits.shiftR` 12) Data.Bits..&. 0x3f)
+                        , 0x80 + ((oc `Data.Bits.shiftR` 6) Data.Bits..&. 0x3f)
+                        , 0x80 + oc Data.Bits..&. 0x3f
+                        ]
 
 
 
@@ -95,8 +91,8 @@ alexGetByte :: AlexInput -> Maybe (Byte,AlexInput)
 alexGetByte (p,c,(b:bs),s) = Just (b,(p,c,bs,s))
 alexGetByte (_,_,[],[]) = Nothing
 alexGetByte (p,_,[],(c:s))  = let p' = alexMove p c
-                              in case utf8Encode' c of
-                                   (b, bs) -> p' `seq`  Just (b, (p', c, bs, s))
+                                  (b:bs) = utf8Encode c
+                              in p' `seq`  Just (b, (p', c, bs, s))
 
 
 
@@ -176,13 +172,13 @@ alexStartPos :: AlexPosn
 alexStartPos = AlexPn 0 1 1
 
 alexMove :: AlexPosn -> Char -> AlexPosn
-alexMove (AlexPn a l c) '\t' = AlexPn (a+1)  l     (c+alex_tab_size-((c-1) `mod` alex_tab_size))
+alexMove (AlexPn a l c) '\t' = AlexPn (a+1)  l     (((c+alex_tab_size-1) `div` alex_tab_size)*alex_tab_size+1)
 alexMove (AlexPn a l _) '\n' = AlexPn (a+1) (l+1)   1
 alexMove (AlexPn a l c) _    = AlexPn (a+1)  l     (c+1)
 
 
 -- -----------------------------------------------------------------------------
--- Monad (default and with ByteString input)
+-- Default monad
 
 
 
@@ -233,6 +229,70 @@ alexMove (AlexPn a l c) _    = AlexPn (a+1)  l     (c+1)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- -----------------------------------------------------------------------------
+-- Monad (with ByteString input)
 
 
 
@@ -338,6 +398,7 @@ alexMove (AlexPn a l c) _    = AlexPn (a+1)  l     (c+1)
 
 -- -----------------------------------------------------------------------------
 -- Basic wrapper
+
 
 
 

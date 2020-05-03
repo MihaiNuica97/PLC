@@ -18,9 +18,9 @@ main' = do (fileName : _ ) <- getArgs
            putStrLn ("Tokens : " ++ (show tokens))
            let parsedProg = (parseCalc tokens)
            putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
-           eval parsedProg []
-        
-        
+           eval parsedProg  []
+
+
 noParse :: ErrorCall -> IO ([Map])
 noParse e = do let err =  show e
                hPutStr stderr err

@@ -17,13 +17,13 @@ import SPLTokens
     varName     { TokenName _ $$ }
     '='         { TokenEq _ }
     '=='        { TokenIsEq _} 
-    and         {TokenAND _}
-    or          {TokenOR _}
-    '<'         {TokenLess _}
-    '>'         {TokenMore _}
-    '<='        {TokenLessEq _}
-    '>='        {TokenMoreEq _}
-    not         {TokenNOT _}
+    and         { TokenAND _}
+    or          { TokenOR _}
+    '<'         { TokenLess _}
+    '>'         { TokenMore _}
+    '<='        { TokenLessEq _}
+    '>='        { TokenMoreEq _}
+    not         { TokenNOT _}
     '+'         { TokenPlus _ } 
     '-'         { TokenMinus _ } 
     '*'         { TokenTimes _ } 
@@ -32,10 +32,10 @@ import SPLTokens
     ')'         { TokenRParen _ } 
     '{'         { TokenLCurly _ }
     '}'         { TokenRCurly _ }
-    '['         {TokenLStraight _}
-    ']'         {TokenRStraight _}
+    '['         { TokenLStraight _}
+    ']'         { TokenRStraight _}
 
-    length      {TokenLength _ }
+    length      { TokenLength _ }
 
     print       { TokenPrint _}
     readLine    { TokenReadLine _}

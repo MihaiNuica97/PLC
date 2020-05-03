@@ -6,7 +6,7 @@ import qualified Data.Bits as Bits
 import Control.Applicative(Applicative(..))
 import Control.Monad (ap)
 
--- parser produced by Happy Version 1.19.12
+-- parser produced by Happy Version 1.19.9
 
 data HappyAbsSyn t4 t5
 	= HappyTerminal (Token)
@@ -1453,8 +1453,29 @@ data Exp = Type Type
 
         |While Exp [Exp]
          deriving Show
-{-# LINE 1 "templates/GenericTemplate.hs" #-}
--- $Id: GenericTemplate.hs,v 1.26 2005/01/14 14:47:22 simonmar Exp $
+{-# LINE 1 "templates\GenericTemplate.hs" #-}
+{-# LINE 1 "templates\\\\GenericTemplate.hs" #-}
+{-# LINE 1 "<built-in>" #-}
+{-# LINE 1 "<command-line>" #-}
+{-# LINE 8 "<command-line>" #-}
+{-# LINE 1 "D:/GitHub/haskell-platform/build/ghc-bindist/local/lib/include/ghcversion.h" #-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{-# LINE 8 "<command-line>" #-}
+{-# LINE 1 "F:/Users/randy/AppData/Local/Temp/ghc1900_0/ghc_2.h" #-}
 
 
 
@@ -1496,6 +1517,164 @@ data Exp = Type Type
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{-# LINE 8 "<command-line>" #-}
+{-# LINE 1 "templates\\\\GenericTemplate.hs" #-}
+-- Id: GenericTemplate.hs,v 1.26 2005/01/14 14:47:22 simonmar Exp 
+
+
+
+
+
+
+
+
+
+{-# LINE 43 "templates\\\\GenericTemplate.hs" #-}
 
 data Happy_IntList = HappyCons Int Happy_IntList
 
@@ -1505,38 +1684,11 @@ data Happy_IntList = HappyCons Int Happy_IntList
 
 
 
+{-# LINE 65 "templates\\\\GenericTemplate.hs" #-}
 
+{-# LINE 75 "templates\\\\GenericTemplate.hs" #-}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+{-# LINE 84 "templates\\\\GenericTemplate.hs" #-}
 
 infixr 9 `HappyStk`
 data HappyStk a = HappyStk a (HappyStk a)
@@ -1549,7 +1701,7 @@ happyParse start_state = happyNewToken start_state notHappyAtAll notHappyAtAll
 -----------------------------------------------------------------------------
 -- Accepting the parse
 
--- If the current token is ERROR_TOK, it means we've just accepted a partial
+-- If the current token is (1), it means we've just accepted a partial
 -- parse (a %partial parser).  We must ignore the saved token on the top of
 -- the stack in this case.
 happyAccept (1) tk st sts (_ `HappyStk` ans `HappyStk` _) =
@@ -1560,46 +1712,9 @@ happyAccept j tk st sts (HappyStk ans _) =
 -----------------------------------------------------------------------------
 -- Arrays only: do the next action
 
+{-# LINE 137 "templates\\\\GenericTemplate.hs" #-}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+{-# LINE 147 "templates\\\\GenericTemplate.hs" #-}
 indexShortOffAddr arr off = arr Happy_Data_Array.! off
 
 
@@ -1712,19 +1827,12 @@ happyDropStk n (x `HappyStk` xs) = happyDropStk (n - ((1)::Int)) xs
 -----------------------------------------------------------------------------
 -- Moving to a new state after a reduction
 
-
-
-
-
-
-
-
-
+{-# LINE 267 "templates\\\\GenericTemplate.hs" #-}
 happyGoto action j tk st = action j j tk (HappyState action)
 
 
 -----------------------------------------------------------------------------
--- Error recovery (ERROR_TOK is the error token)
+-- Error recovery ((1) is the error token)
 
 -- parse error if we are in recovery and we fail again
 happyFail explist (1) tk old_st _ stk@(x `HappyStk` _) =
@@ -1737,17 +1845,17 @@ happyFail explist (1) tk old_st _ stk@(x `HappyStk` _) =
     for now --SDM
 
 -- discard a state
-happyFail  ERROR_TOK tk old_st CONS(HAPPYSTATE(action),sts) 
+happyFail  (1) tk old_st (((HappyState (action))):(sts)) 
                                                 (saved_tok `HappyStk` _ `HappyStk` stk) =
 --      trace ("discarding state, depth " ++ show (length stk))  $
-        DO_ACTION(action,ERROR_TOK,tk,sts,(saved_tok`HappyStk`stk))
+        action (1) (1) tk (HappyState (action)) sts ((saved_tok`HappyStk`stk))
 -}
 
 -- Enter error recovery: generate an error token,
 --                       save the old token and carry on.
 happyFail explist i tk (HappyState (action)) sts stk =
 --      trace "entering error recovery" $
-        action (1) (1) tk (HappyState (action)) sts ((HappyErrorToken (i)) `HappyStk` stk)
+        action (1) (1) tk (HappyState (action)) sts ( (HappyErrorToken (i)) `HappyStk` stk)
 
 -- Internal happy errors:
 
@@ -1778,14 +1886,7 @@ happyDontSeq a b = b
 -- of deciding to inline happyGoto everywhere, which increases the size of
 -- the generated parser quite a bit.
 
-
-
-
-
-
-
-
-
+{-# LINE 333 "templates\\\\GenericTemplate.hs" #-}
 {-# NOINLINE happyShift #-}
 {-# NOINLINE happySpecReduce_0 #-}
 {-# NOINLINE happySpecReduce_1 #-}
