@@ -36,6 +36,9 @@ tokens :-
   \)                              { tok (\p s -> TokenRParen p) }
   \{                              { tok (\p s -> TokenLCurly p) }
   \}                              { tok (\p s -> TokenRCurly p) }
+  \[                              { tok (\p s -> TokenLStraight p) }
+  \]                              { tok (\p s -> TokenRStraight p) }
+  \,                              { tok (\p s -> TokenComma p) }
   print                           { tok (\p s -> TokenPrint p)} 
   readLine                        { tok (\p s -> TokenReadLine p)}
   if                              { tok (\p s -> TokenIf p) }
@@ -73,6 +76,9 @@ data Token =
   TokenRParen AlexPosn         |
   TokenLCurly AlexPosn         |
   TokenRCurly AlexPosn         |
+  TokenLStraight AlexPosn      |
+  TokenRStraight AlexPosn      |
+  TokenComma AlexPosn          |
   TokenNewLine AlexPosn        |
   TokenPrint AlexPosn          |
   TokenReadLine AlexPosn       |
@@ -110,6 +116,11 @@ tokenPosn (TokenLParen (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenRParen (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenLCurly (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenRCurly (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenLStraight (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenRStraight (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+
+tokenPosn (TokenComma (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
+
 
 tokenPosn (TokenPrint (AlexPn a l c)) = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenNewLine (AlexPn a l c)) = show(l) ++ ":" ++ show(c)

@@ -14,10 +14,7 @@ eval (x:xs)  stack = do
 
 
 evalExpr :: Exp -> Stack -> IO Stack
-evalExpr (Print (Lookup exp)) stack = do 
-    let foundVar = getVar exp stack
-    putStrLn (printVar foundVar)  
-    return stack
+
 
 --Handles if else statements
 evalExpr (IfElse (Lookup name) exps1 exps2) stack 
@@ -29,10 +26,17 @@ evalExpr (IfElse cond exps1 exps2) stack
     | otherwise = (eval exps2 stack)
 
 
-       
-        --tried doing list comprehension on all expresions e.g [evalExpr e stack | e <- exps1]
 
 -- output to console
+evalExpr (Print (Lookup exp)) stack = do 
+    let foundVar = getVar exp stack
+    putStrLn (printVar foundVar)  
+    return stack
+
+evalExpr (Print (Type (Arr exp))) stack = do 
+    putStrLn (printArr exp)
+    return stack
+
 evalExpr (Print (Type exp)) stack = do 
     putStrLn (printVal exp)
     return stack
@@ -45,8 +49,9 @@ evalExpr (Print exp) stack = do
 -- If variable is declared without an initial value, it is marked with "Empty"
 -- Does NOT check if variable is already declared
 evalExpr (Declare var) stack = do
-    putStrLn ("Variable " ++ var ++ " declared")
-    return stack
+    return (declareVar var stack)
+
+
 
 -- Declare with value of an already existing variable
 evalExpr (DeclareWithVal name (Lookup varName)) stack = 
@@ -156,6 +161,7 @@ assignVar :: String -> Type -> Stack -> Stack
 assignVar name (Int value) stack = replaceVar (name,(Int value)) stack
 assignVar name (String value) stack = replaceVar (name,(String value)) stack
 assignVar name (Bool value) stack = replaceVar (name,(Bool value)) stack
+assignVar name (Arr value) stack = replaceVar (name,(Arr value)) stack
 
 -- takes a variable, replaces the value in the stack and returns changed stack.
 -- utility function for assignVar
@@ -176,9 +182,16 @@ printVar (name, String val) = val
 printVar (name, Int val) = show val
 printVar (name, Bool val) = show val
 printVar (name, Empty) = "Null Value"
+printVar (name, Arr xs) = printArr xs
 
 -- returns free value as a String
 printVal :: Type -> String
 printVal (Bool b) = show b
 printVal (Int i) = show i
 printVal (String s) = s
+
+printArr :: [Type] -> String
+printArr((Int x):xs) = show x ++ " " ++ printArr(xs)
+printArr((String x):xs) = x ++ " " ++ printArr(xs)
+printArr((Bool x):xs) = show x ++ " " ++ printArr(xs)
+printArr([]) = ""

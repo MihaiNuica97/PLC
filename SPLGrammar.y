@@ -8,9 +8,9 @@ import SPLTokens
 %error { parseError }
 %token 
     nl          { TokenNewLine _}
+    ','         { TokenComma _ }
     int         { TokenInt _ $$ }
-    true        { TokenBool _ $$}
-    false       { TokenBool _ $$}
+    bool        { TokenBool _ $$}
     string      { TokenString _ $$}
     var         { TokenVar _ }
     varName     { TokenName _ $$ }
@@ -31,6 +31,8 @@ import SPLTokens
     ')'         { TokenRParen _ } 
     '{'         { TokenLCurly _ }
     '}'         { TokenRCurly _ }
+    '['         {TokenLStraight _}
+    ']'         {TokenRStraight _}
     print       { TokenPrint _}
     readLine    { TokenReadLine _}
     if          { TokenIf _ }
@@ -55,6 +57,14 @@ Exps : Exp nl Exps      { $1 : $3 }
     | Exp             { [$1] }
     | {- empty -}		{ [] }
 
+ValList: int ',' ValList    {(Int $1) : $3}
+        | string ',' ValList    {(String $1) : $3}
+        | bool ',' ValList    {(Bool $1) : $3}
+        | int                {[Int $1]}
+        | string             {[String $1]}
+        | bool               {[Bool $1]}
+        |                    {[]}
+
 
 Exp :: {Exp}
 Exp : Exp '+' Exp            { Plus $1 $3 } 
@@ -70,16 +80,19 @@ Exp : Exp '+' Exp            { Plus $1 $3 }
     | Exp or Exp             { OR $1 $3}
     | not Exp                { NOT $2}                           
     | '(' Exp ')'            { $2 } 
-    | '{' Exp '}'            { $2 } 
+    | '{' Exp '}'            { $2 }
     | int                    { Type (Int $1) }
     | int int                { Plus (Type (Int $1)) (Type (Int $2))}
-    | true                   { Type (Bool $1)}
-    | false                  { Type (Bool $1)} 
+    | bool                   { Type (Bool $1)}
     | string                 { Type (String $1)}
     | print '('Exp')'  nl    { Print $3 }
+    | print '(' '[' ValList ']' ')' nl  {Print (Type (Arr $4))}
     | varName                { Lookup $1 }
     | var varName nl         { Declare $2}
+    | var varName '['']' nl  {Declare $2}
+    | var varName '=' '[' ValList ']' nl { DeclareWithVal $2 (Type (Arr $5))}
     | varName '=' Exp nl     { Assign $1 $3}
+    | varName '=' '[' ValList ']' nl     { Assign $1 (Type (Arr $4))}
     | var varName '=' Exp nl { DeclareWithVal $2 $4}
     | readLine            { ReadLine }
     | if '(' Exp ')' '{' Exps '}' else '{' Exps '}'  { IfElse $3 $6 $10} 
@@ -90,14 +103,16 @@ parseError :: [Token] -> a
 parseError [] = error "Unknown Parse Error" 
 parseError (t:ts) = error ("Parse error at line:column " ++ (tokenPosn t))
 
-data Type = Bool Bool  | Int Int | String String | Empty
+data Type = Bool Bool  | Int Int | String String | Arr [Type] | Empty
     deriving (Eq, Show)
 
 data Exp = Type Type
+
         | Plus Exp Exp 
         | Minus Exp Exp 
         | Times Exp Exp 
         | Div Exp Exp 
+
         | IsEq Exp Exp
         | IsLess Exp Exp
         | IsMore Exp Exp
@@ -105,11 +120,13 @@ data Exp = Type Type
         | AND Exp Exp
         | OR Exp Exp
         | NOT Exp
+        
         | Declare String 
         | DeclareWithVal String Exp
         | Assign String Exp
-        | Print Exp
         | Lookup String
+        
+        | Print Exp
         | ReadLine
         | IfElse Exp [Exp] [Exp]
          deriving Show 
