@@ -33,6 +33,12 @@ evalExpr (Print (Lookup exp)) stack = do
     putStrLn (printVar foundVar)  
     return stack
 
+evalExpr (Print (GetIndex x (Lookup name))) stack = do
+    let foundVar = getVar name stack
+    let valueAtIndex = getIndex x foundVar
+    putStrLn (printVal valueAtIndex)
+    return stack
+
 evalExpr (Print (Type (Arr exp))) stack = do 
     putStrLn (printArr exp)
     return stack
@@ -45,8 +51,8 @@ evalExpr (Print exp) stack = do
     putStrLn (printVal (evalTerminalExpr (exp,stack)))
     return stack
     
--- Declare empty variable
--- If variable is declared without an initial value, it is marked with "Empty"
+-- Declare NULL variable
+-- If variable is declared without an initial value, it is marked with "NULL"
 -- Does NOT check if variable is already declared
 evalExpr (Declare var) stack = do
     return (declareVar var stack)
@@ -57,6 +63,11 @@ evalExpr (Declare var) stack = do
 evalExpr (DeclareWithVal name (Lookup varName)) stack = 
     evalExpr(DeclareWithVal name (Type (snd (getVar varName stack)))) stack
     
+-- Declare with index of an array
+evalExpr (DeclareWithVal name (GetIndex i (Lookup arrName))) stack = 
+    evalExpr (DeclareWithVal name (Type (getIndex i (getVar arrName stack)))) stack
+    
+
 -- Declare with an absolute value
 evalExpr (DeclareWithVal name (Type val)) stack = do
     let stack' = declareVar name stack
@@ -66,10 +77,10 @@ evalExpr (DeclareWithVal name (Type val)) stack = do
 -- Declare with the result from reading a line from stdin    
 evalExpr (DeclareWithVal name ReadLine) stack = do
     line <- getLine
-    let headVal = head (map digitToInt line) 
+    let val = parseInput line
     -- this line is just a temp solution to parse an Int (the first character of the line) to assignVar below
     let stack' = declareVar name stack
-    let stack'' = assignVar name (Int headVal) stack'
+    let stack'' = assignVar name val stack'
     return stack''
 
 -- Declare with result of an operation
@@ -80,6 +91,10 @@ evalExpr (DeclareWithVal name exp) stack =
 -- Does NOT check if variable is already declared
 evalExpr (Assign name (Lookup varName)) stack = 
     evalExpr (Assign name (Type (snd (getVar varName stack)))) stack
+
+-- Assign with index of array
+evalExpr (Assign name (GetIndex i (Lookup arrName))) stack = 
+    evalExpr (Assign name (Type (getIndex i (getVar arrName stack)))) stack
 
 -- Assign with absolute value
 evalExpr (Assign name (Type value)) stack = do 
@@ -116,12 +131,14 @@ evalOp ((Times x1 x2),stack) = (evalOp (x1,stack)) * (evalOp (x2,stack))
 evalOp ((Div x1 x2),stack) = div (evalOp (x1,stack)) (evalOp (x2,stack))
 evalOp ((Type (Int x)),stack) = x
 evalOp ((Lookup name),stack) = evalOp ((Type (snd (getVar name stack))),stack)
-
+evalOp ((GetIndex index (Lookup arrName)),stack) = evalOp((Type (getIndex index (getVar arrName stack))),stack)
 -- Boolean operations
 evalBool :: (Exp,Stack) -> Type
+evalBool (Type (NULL),stack) = NULL
 evalBool (Type (Bool b),stack) = (Bool b)
 evalBool (Type (String s),stack) = (String s)
 evalBool (Type (Int x),stack) = (Int x)
+evalBool ((GetIndex index (Lookup arrName)),stack) = (getIndex index (getVar arrName stack))
 evalBool ((AND x1 x2),stack) = (andType ((evalBool(x1,stack)),(evalBool(x2,stack))))
 evalBool ((OR x1 x2),stack) = (orType ((evalBool(x1,stack)),(evalBool(x2,stack))))
 evalBool ((NOT exp),stack) =  negateType(evalBool(exp,stack))
@@ -153,7 +170,7 @@ moreType ((Int x),(Int y)) = (Bool (x > y))
 
 --operations on expresses
 declareVar :: String -> Stack -> Stack
-declareVar name stack = (name, Empty):stack
+declareVar name stack = (name, NULL):stack
 
 
 -- finds variable inside the stack and changes its value. Works with expressions
@@ -175,13 +192,20 @@ replaceVar map [] = []
 getVar :: String -> Stack -> Map
 getVar name stack = head(filter ((==name).fst) stack) 
 
+getIndex :: Int -> Map -> Type
+getIndex i (name,Arr (x:xs))
+    | i == 0 = x
+    | i < 0 = NULL
+    | otherwise = (getIndex (i-1) (name, (Arr xs)))
+getIndex i (name, Arr []) = NULL
+
 
 -- returns value stored in a variable as a String 
 printVar :: Map -> String
 printVar (name, String val) = val
 printVar (name, Int val) = show val
 printVar (name, Bool val) = show val
-printVar (name, Empty) = "Null Value"
+printVar (name, NULL) = "Null Value"
 printVar (name, Arr xs) = printArr xs
 
 -- returns free value as a String
@@ -189,9 +213,21 @@ printVal :: Type -> String
 printVal (Bool b) = show b
 printVal (Int i) = show i
 printVal (String s) = s
+printVal (NULL) = show NULL
 
 printArr :: [Type] -> String
 printArr((Int x):xs) = show x ++ " " ++ printArr(xs)
 printArr((String x):xs) = x ++ " " ++ printArr(xs)
 printArr((Bool x):xs) = show x ++ " " ++ printArr(xs)
 printArr([]) = ""
+
+parseInput :: String -> Type
+parseInput sentence = (Arr (convertIntArrToType (convertCharsToInts (words sentence))))
+
+convertIntArrToType :: [Int] -> [Type]
+convertIntArrToType (x:xs) = (Int x):(convertIntArrToType xs)
+convertIntArrToType [] = [] 
+
+convertCharsToInts :: [String] -> [Int]
+convertCharsToInts (x:xs) = (read x :: Int):(convertCharsToInts xs)
+convertCharsToInts [] = []

@@ -93,6 +93,7 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     | print '(' '[' ValList ']' ')' nl              { Print (Type (Arr $4))}
 
     | varName                                       { Lookup $1 }
+    | varName '[' int ']'                           { GetIndex $3 (Lookup $1)}
     | var varName nl                                { Declare $2}
     | var varName '['']' nl                         { Declare $2}
     | var varName '=' '[' ValList ']' nl            { DeclareWithVal $2 (Type (Arr $5))}
@@ -110,7 +111,7 @@ parseError :: [Token] -> a
 parseError [] = error "Unknown Parse Error" 
 parseError (t:ts) = error ("Parse error at line:column " ++ (tokenPosn t))
 
-data Type = Bool Bool  | Int Int | String String | Arr [Type] | Empty
+data Type = Bool Bool  | Int Int | String String | Arr [Type] | NULL
     deriving (Eq, Show)
 
 data Exp = Type Type
@@ -132,6 +133,8 @@ data Exp = Type Type
         | DeclareWithVal String Exp
         | Assign String Exp
         | Lookup String
+
+        |GetIndex Int Exp
         
         | Print Exp
         | ReadLine

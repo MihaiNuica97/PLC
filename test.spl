@@ -1,3 +1,7 @@
-var x;
-x = [1,"abc",true];
+var x = readLine;
+var y = readLine;
 print(x);
+print(y);
+var i;
+i = (y[0] == 3);
+print(i);
