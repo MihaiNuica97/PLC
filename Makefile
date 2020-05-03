@@ -18,7 +18,7 @@ myinterpreter: $(DEPEND) Main.hs
 # Generate ML files from a parser definition file
 SPLGrammar.hs : SPLGrammar.y
 	@rm -f SPLGrammar.hs
-	happy Grammar.y
+	happy SPLGrammar.y
 	@chmod -w SPLGrammar.hs
 
 # Generate ML files from a lexer definition file

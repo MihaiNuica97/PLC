@@ -10,3 +10,5 @@ SPLTokens.o
 SPLGrammar.hi
 SPLTokens.hi
 SPLEval.hi
+myinterpreter.exe
+test2.spl
