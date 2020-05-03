@@ -7,7 +7,7 @@ import SPLTokens
 %tokentype { Token } 
 %error { parseError }
 %token 
-    nl          { TokenNewLine _ }
+    nl          { TokenNewLine _}
     ','         { TokenComma _ }
     '.'         { TokenDot _ }
     int         { TokenInt _ $$ }
@@ -16,14 +16,14 @@ import SPLTokens
     var         { TokenVar _ }
     varName     { TokenName _ $$ }
     '='         { TokenEq _ }
-    '=='        { TokenIsEq _ } 
-    and         { TokenAND _ }
-    or          { TokenOR _ }
-    '<'         { TokenLess _ }
-    '>'         { TokenMore _ }
-    '<='        { TokenLessEq _ }
-    '>='        { TokenMoreEq _ } 
-    not         { TokenNOT _} 
+    '=='        { TokenIsEq _} 
+    and         {TokenAND _}
+    or          {TokenOR _}
+    '<'         {TokenLess _}
+    '>'         {TokenMore _}
+    '<='        {TokenLessEq _}
+    '>='        {TokenMoreEq _}
+    not         {TokenNOT _}
     '+'         { TokenPlus _ } 
     '-'         { TokenMinus _ } 
     '*'         { TokenTimes _ } 
@@ -32,10 +32,10 @@ import SPLTokens
     ')'         { TokenRParen _ } 
     '{'         { TokenLCurly _ }
     '}'         { TokenRCurly _ }
-    '['         { TokenLStraight _ }
-    ']'         { TokenRStraight _ }
+    '['         {TokenLStraight _}
+    ']'         {TokenRStraight _}
 
-    length      { TokenLength _ }
+    length      {TokenLength _ }
 
     print       { TokenPrint _}
     readLine    { TokenReadLine _}
@@ -109,7 +109,7 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     | varName '=' '[' ValList ']' nl                { Assign $1 (Type (Arr $4))}
     | var varName '=' Exp nl                        { DeclareWithVal $2 $4}
 
-    | varName '.' length '('')'                     { Length (Lookup $1)}
+    | varName '.' length '('')'                     {Length (Lookup $1)}
 
     | readLine                                      { ReadLine }
     
@@ -146,8 +146,8 @@ data Exp = Type Type
         | Assign String Exp
         | Lookup String
 
-        | GetIndex Int Exp
-        | Length Exp
+        |GetIndex Int Exp
+        |Length Exp
         
         | Print Exp
         | ReadLine

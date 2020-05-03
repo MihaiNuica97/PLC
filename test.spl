@@ -1,12 +1,8 @@
 var x = readLine;
-var y = readLine;
-print(x);
-print(y);
 
-var i = 0;
-
-while(i < 5)
+while(x.length() != 0)
 {
-    print(i);
-    i = i+1;
+    var y = x.length() - 1;
+    print(x);
+    x = readLine;
 }
