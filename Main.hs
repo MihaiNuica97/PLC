@@ -25,4 +25,3 @@ noParse :: ErrorCall -> IO ([Map])
 noParse e = do let err =  show e
                hPutStr stderr err
                return ([])
-

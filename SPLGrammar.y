@@ -117,7 +117,6 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     | if '(' Exp ')' '{' Exps '}'                   { IfElse $3 $6 []}
     
     | while '(' Exp ')' '{' Exps '}'                { While $3 $6}
-
 { 
 
 parseError :: [Token] -> a
