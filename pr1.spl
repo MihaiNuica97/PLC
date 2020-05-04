@@ -1,22 +1,28 @@
-var stream1;
-var stream2;
-var line;
-line = readLine;
+var line = readLine;
 
-while(line != null) {
-    var a = line[0]
-    var b = readInt(1);
-    stream1.push(a);
-    stream2.push(b);
+var s1 = [];
+var s2 = [];
+
+s1.push(line[0]);
+s2.push(line[1]);
+var left;
+var right;
+
+while(line.length() != 0)
+{
+    line = readLine;
+    s1.push(line[0]);
+    s2.push(line[1]);
+
+    
+    left = s1.deQ();
+    print(left);
+    left = s1.deQ();
+    print(left);
+    right = s2.deQ();
+    print(right);
 
     line = readLine;
-    var c = line[0];
-    var d = line[1];
-    stream1.push(c);
-    stream2.push(d);
-
-    print(stream1.pop())
-    print(stream1.pop())
-    print(stream2.pop())
-    line = readLine;
+    s1.push(line[0]);
+    s2.push(line[1]);
 }

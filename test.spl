@@ -1,11 +1,15 @@
 var x = [1,2,3,4];
-var y;
+
+// IMPORTANT: ALWAYS DECLARE VARIABLES AS EMPTY FIRST
+// BEFORE STORING ARRAY OPERATIONS IN THEM
+var y; 
 var z;
+
 y = x.pop();
 z =  x.deQ();
-
 x.enQ(y);
 x.push(z);
+
 print(x);
 print(y);
 print(z);
