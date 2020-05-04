@@ -22,3 +22,4 @@ while(line.length() != 0) {
     print(left);
 
     line = readLine;
+}
