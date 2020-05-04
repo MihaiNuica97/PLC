@@ -1,15 +1,15 @@
-var x = [];
-var i = 0;
-var y = 5;
-x.push(1);
-x.push(2);
-x.push((5-2));
-x.push((2+2));
-x.push(y);
+var x = [1,2,3,4];
 
-while(i <= (x.length() - 1))
-{
-    print(x[i]);
-    i = i+1;
-}
+// IMPORTANT: ALWAYS DECLARE VARIABLES AS EMPTY FIRST
+// BEFORE STORING ARRAY OPERATIONS IN THEM
+var y; 
+var z;
 
+y = x.pop();
+z =  x.deQ();
+x.enQ(y);
+x.push(z);
+
+print(x);
+print(y);
+print(z);

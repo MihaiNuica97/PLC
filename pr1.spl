@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 var stream1 = [];
 var stream2 = [];
 
@@ -20,3 +21,33 @@ while(line.length() != 0) {
     print(stream2.pop())
     var line = readLine;
 }
+=======
+var line = readLine;
+
+var s1 = [];
+var s2 = [];
+
+s1.push(line[0]);
+s2.push(line[1]);
+var left;
+var right;
+
+while(line.length() != 0)
+{
+    line = readLine;
+    s1.push(line[0]);
+    s2.push(line[1]);
+
+    
+    left = s1.deQ();
+    print(left);
+    left = s1.deQ();
+    print(left);
+    right = s2.deQ();
+    print(right);
+
+    line = readLine;
+    s1.push(line[0]);
+    s2.push(line[1]);
+}
+>>>>>>> b807183a38104536c73436b32dd8936e7ded9339

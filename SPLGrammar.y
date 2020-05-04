@@ -117,7 +117,10 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     | varName '.' length '('')'                     {Length (Lookup $1)}
     
     | varName '.' pop '('')'                        {Pop (Lookup $1)}
+    | varName '=' varName '.' pop '('')'            {Assign $1 (Pop (Lookup $3))}
     | varName '.' deq '('')'                        {DeQ (Lookup $1)}
+    | varName '=' varName '.' deq '('')'            {Assign $1 (DeQ (Lookup $3))}
+
 
     |varName '.' push '('Exp')'                     {Push $5 (Lookup $1)}
     |varName '.' enq '('Exp')'                      {EnQ $5 (Lookup $1)}
