@@ -4,7 +4,7 @@ import SPLEval
 import System.Environment
 import Control.Exception
 import System.IO
-import Data.List
+
 --main method code adapted from Julians provided tutorials
 
 main :: IO ([Map])
@@ -19,7 +19,6 @@ main' = do (fileName : _ ) <- getArgs
            let parsedProg = (parseCalc tokens)
            --putStrLn ("Parsed as " ++ (show parsedProg) ++ "\n")
            eval parsedProg  []
-
 
 noParse :: ErrorCall -> IO ([Map])
 noParse e = do let err =  show e

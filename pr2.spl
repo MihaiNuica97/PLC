@@ -1,10 +1,6 @@
-var stream1;
-var stream2; 
-var stream3; 
+var line = readLine;
 
-line = readLine;
-
-while(line.length() > 0) {
+while(line.length() != 0) {
     var a = line[0];
     var b = line[1];
     var c = line[2];
@@ -15,5 +11,5 @@ while(line.length() > 0) {
     print(a+b);
     print(b+c);
 
-    line = readLine;
+    var line = readLine;
 }
