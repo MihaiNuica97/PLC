@@ -104,6 +104,24 @@ evalExpr (DeclareWithVal name exp) stack =
 
 
 -- Operations on arrays
+
+evalExpr(Pop (Lookup name)) stack = do
+    let foundVar = getVar name stack
+    let array = getArrayVal (snd foundVar)
+    let newArray = popArr array
+    let newVar = Arr newArray
+    let stack' = assignVar name newVar stack
+    return stack'
+
+evalExpr(DeQ (Lookup name)) stack = do
+    let foundVar = getVar name stack
+    let array = getArrayVal (snd foundVar)
+    let newArray = deqArr array
+    let newVar = Arr newArray
+    let stack' = assignVar name newVar stack
+    return stack'
+
+
 evalExpr (Push (Type newVal)(Lookup name)) stack = do 
     let foundVar = getVar name stack
     let array = getArrayVal (snd foundVar)
@@ -112,8 +130,21 @@ evalExpr (Push (Type newVal)(Lookup name)) stack = do
     let stack' = assignVar name newVar stack
     return stack'
 
+
 evalExpr (Push exp1 exp2) stack = 
     evalExpr (Push (Type (evalTerminalExpr (exp1,stack))) exp2 ) stack
+
+evalExpr (EnQ (Type newVal)(Lookup name)) stack = do 
+    let foundVar = getVar name stack
+    let array = getArrayVal (snd foundVar)
+    let newArray = enq newVal array
+    let newVar = Arr newArray
+    let stack' = assignVar name newVar stack
+    return stack'
+
+
+evalExpr (EnQ exp1 exp2) stack = 
+    evalExpr (EnQ (Type (evalTerminalExpr (exp1,stack))) exp2 ) stack
 
 evalExpr (AssignArr name (Type (Int index)) (Type value)) stack = do 
     let foundVar = getVar name stack
@@ -150,7 +181,23 @@ evalExpr (Assign name ReadLine) stack = do
             let stack' = assignVar name val stack
             return stack'
 
+-- pops array and stores the popped value in a variable
+evalExpr(Assign name (Pop (Lookup arrName))) stack = do
+    -- modify
+    let foundArr = getVar arrName stack
+    let poppedVal = (pop (getArrayVal (snd foundArr)))
+    let stack' =  assignVar name poppedVal stack
+    let stack'' = assignVar arrName (Arr (popArr (getArrayVal (snd foundArr)))) stack'
+    return stack''
 
+-- same as pop but dequeue
+evalExpr(Assign name (DeQ (Lookup arrName))) stack = do
+    -- modify
+    let foundArr = getVar arrName stack
+    let poppedVal = (deque (getArrayVal (snd foundArr)))
+    let stack' =  assignVar name poppedVal stack
+    let stack'' = assignVar arrName (Arr (deqArr (getArrayVal (snd foundArr)))) stack'
+    return stack''
 -- Assign with result of an operation
 evalExpr (Assign name exp) stack = 
     evalExpr (Assign name (Type (evalTerminalExpr (exp,stack)))) stack
@@ -161,9 +208,6 @@ evalExpr (readLine) stack = do
     putStrLn(line)
     return stack
 
-push:: Type -> [Type] -> [Type]
-push val (x:xs) =((x:xs)++[val])
-push val [] = [val]
 
 -- General Operations
 evalTerminalExpr:: (Exp,Stack) -> Type
@@ -263,6 +307,27 @@ getIndex (Int i) (name, Arr []) = NULL
 
 replaceAtIndex:: Int -> [Type] -> Type -> [Type]
 replaceAtIndex index arr val = (merge ((fst (splitAt (index) arr))++[val]) (tail(snd(splitAt (index) arr))))
+
+push:: Type -> [Type] -> [Type]
+push val (x:xs) =((x:xs)++[val])
+push val [] = [val]
+
+enq:: Type -> [Type] -> [Type]
+enq val x =(val:x)
+
+pop:: [Type] -> Type
+pop x = (last x)
+
+popArr :: [Type] -> [Type]
+popArr [] = []
+popArr x = (init x)
+
+deque:: [Type] -> Type
+deque x = (head x)
+
+deqArr:: [Type] -> [Type]
+deqArr (x:xs) = xs
+deqArr [] = []
 
 
 merge :: [Type] -> [Type] -> [Type]
