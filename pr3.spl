@@ -1,17 +1,16 @@
 var stream1 = [];
 var stream2 = [];
+var line = readLine;
 var left;
 var right;
-var line = readLine;
 
 print(0);
 
-while(line.length() != 0) {
-    
+while(line.length() != 0) 
+{
     stream1.push(line[0]);
     
     line = readLine;
-  
     stream1.push(line[0]);
     stream2.push(line[1]);
 

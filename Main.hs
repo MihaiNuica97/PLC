@@ -5,7 +5,7 @@ import System.Environment
 import Control.Exception
 import System.IO
 
---main method code adapted from Julians provided tutorials
+--main method and error handling code adapted from Julians provided tutorials
 
 main :: IO ([Map])
 

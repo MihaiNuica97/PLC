@@ -34,19 +34,20 @@ import SPLTokens
     '}'         { TokenRCurly _ }
     '['         { TokenLStraight _}
     ']'         { TokenRStraight _}
-
-    length      {TokenLength _ }
-    pop         {TokenPop _}
-    push        {TokenPush _}
-    enq         {TokenEnQ _}
-    deq         {TokenDeQ _}
-
+  
+    length      { TokenLength _ }
+    pop         { TokenPop _}
+    push        { TokenPush _}
+    enq         { TokenEnQ _}
+    deq         { TokenDeQ _}
+    
     print       { TokenPrint _}
     readLine    { TokenReadLine _}
+   
     if          { TokenIf _ }
     else        { TokenElse _ }
+    while       { TokenWhile _ }
 
-    while       {TokenWhile _ }
 
     %left '==' and or
     %left '+' '-' 
@@ -55,18 +56,28 @@ import SPLTokens
     %left not
     %left nl
     %right var
-    %nonassoc int string true false var '(' ')'
+    %nonassoc '{' '}' 
+    %nonassoc '(' ')' 
+    %nonassoc '[' ']'
+    %nonassoc readLine
+    %nonassoc int string true false
     %nonassoc print readLine
-    %nonassoc if else
+    %nonassoc if
+    %nonassoc else
     %nonassoc while
+    %nonassoc '.' ','
+    %nonassoc length pop push eng deq
+    %nonassoc int bool string true false
+    %nonassoc print 
 %% 
 
 
 Exps : Exp nl Exps      { $1 : $3 }
     | nl Exps           { $2 }
-    | Exp Exps          {$1 : $2}
+    | Exp Exps          { $1 : $2}
     | Exp               { [$1] }
     | {- empty -}		{ [] }
+
 
 ValList: int ',' ValList        {(Int $1) : $3}
         | string ',' ValList    {(String $1) : $3}
@@ -114,24 +125,23 @@ Exp : Exp '+' Exp                                   { Plus $1 $3 }
     | varName '=' '[' ValList ']' nl                { Assign $1 (Type (Arr $4))}
     | var varName '=' Exp nl                        { DeclareWithVal $2 $4}
 
-    | varName '.' length '('')'                     {Length (Lookup $1)}
+    | varName '.' length '('')'                     { Length (Lookup $1)}
     
-    | varName '.' pop '('')'                        {Pop (Lookup $1)}
-    | varName '=' varName '.' pop '('')'            {Assign $1 (Pop (Lookup $3))}
-    | varName '.' deq '('')'                        {DeQ (Lookup $1)}
-    | varName '=' varName '.' deq '('')'            {Assign $1 (DeQ (Lookup $3))}
+    | varName '.' pop '('')'                        { Pop (Lookup $1)}
+    | varName '=' varName '.' pop '('')'            { Assign $1 (Pop (Lookup $3))}
+    | varName '.' deq '('')'                        { DeQ (Lookup $1)}
+    | varName '=' varName '.' deq '('')'            { Assign $1 (DeQ (Lookup $3))}
 
-
-    |varName '.' push '('Exp')'                     {Push $5 (Lookup $1)}
-    |varName '.' enq '('Exp')'                      {EnQ $5 (Lookup $1)}
+    | varName '.' push '('Exp')'                    { Push $5 (Lookup $1)}
+    | varName '.' enq '('Exp')'                     { EnQ $5 (Lookup $1)}
 
     | readLine                                      { ReadLine }
     
     | if '(' Exp ')' '{' Exps '}' else '{' Exps '}' { IfElse $3 $6 $10} 
     | if '(' Exp ')' '{' Exps '}'                   { IfElse $3 $6 []}
-    
     | while '(' Exp ')' '{' Exps '}'                { While $3 $6}
 { 
+
 
 parseError :: [Token] -> a
 parseError [] = error "Unknown Parse Error" 
@@ -161,19 +171,18 @@ data Exp = Type Type
         | AssignArr String Exp Exp
         | Lookup String
 
-        |GetIndex Exp Exp
-        |Length Exp
+        | GetIndex Exp Exp
+        | Length Exp
         
-        |Pop Exp
-        |DeQ Exp
-
-        |Push Exp Exp
-        |EnQ Exp Exp
+        | Pop Exp
+        | DeQ Exp
+        | Push Exp Exp
+        | EnQ Exp Exp
         
         | Print Exp
         | ReadLine
+        
         | IfElse Exp [Exp] [Exp]
-
-        |While Exp [Exp]
+        | While Exp [Exp]
          deriving Show 
 }

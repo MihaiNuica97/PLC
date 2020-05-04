@@ -1,9 +1,10 @@
 var accumulator = 0;
 var line = readLine;
+var a;
 
-while(line.length() > 0) {
-    var a = line[0];
-    var line = readLine;
+while(line.length() != 0) {
+    a = line[0];
     accumulator = (accumulator + a);
     print(accumulator);
+    line = readLine;
 }

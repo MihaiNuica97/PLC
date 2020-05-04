@@ -1,9 +1,13 @@
 var line = readLine;
+var a;
+var b;
+var c;
 
-while(line.length() != 0) {
-    var a = line[0];
-    var b = line[1];
-    var c = line[2];
+while(line.length() != 0) 
+{
+    a = line[0];
+    b = line[1];
+    c = line[2];
 
     print(c);
     print(b);
@@ -11,5 +15,5 @@ while(line.length() != 0) {
     print(a+b);
     print(b+c);
 
-    var line = readLine;
+    line = readLine;
 }
