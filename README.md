@@ -6,13 +6,13 @@ https://docs.google.com/document/d/1eZos1Dl1OXi8WlE3zpNYl79vZZop2e3bfeq8APbekX8/
 In CMD, to create the executable, type:
 ghc -o myinterpreter Main.hs
 
-In CMD, to run the executable with a file, type:
+In CMD, to run the executable with an spl file and stream, type:
 myinterpreter pr1.spl < pr1text.txt
 
-In terminal with Make installed (i.e cygwin)
-$make         
-$make clean
-Allows you to recompile all documents quickly.
+On a unix machine with Make installed (i.e cygwin)
+$make           <- allows you to quickly make the executable
+$make clean     <- deletes all old and unnecessary files
+
 
 ***PROBLEMS***
 
