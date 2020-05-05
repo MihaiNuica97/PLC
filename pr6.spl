@@ -1,0 +1,66 @@
+var line = readLine;
+var stream1 = [];
+var stream2 = [];
+var left;
+var right;
+var a;
+var b;
+var i;
+var aLast = false;
+var bLast = true;
+
+if (line.length() > 0) {
+    stream1.push(line[0]);
+    stream2.push(line[1]);
+}
+
+while(line.length() > 0)  {
+    a = 0;
+    b = 0;
+    i = 0;
+
+    line = readLine;
+    //reads 3 lines at a time, if EOF is reached, stops adding them to array
+    while (i < 3 && line.length() > 0) {
+        stream1.push(line[0]);
+        stream2.push(line[1]);
+        line = readLine;
+        i = (i + 1);
+    }
+    
+    //prints up to 2a's and checks 3b's (or 0 at start) was before
+    while (a < 2 && stream1.length() > 0 && bLast == true) {
+        left = stream1.deQ();
+        print(left);
+        a = (a + 1);
+    }
+    if (a == 2) {
+        aLast = true;
+    }
+    bLast = false;
+
+    //prints up to 3bs and checks 2a's was before
+    while (b < 3 && stream2.length() > 0 && aLast == true) {
+        right = stream2.deQ();
+        print(right);
+        b = (b + 1);
+    }
+    if (b == 3) {
+        bLast = true;
+    }
+    aLast = false;
+}
+
+//on large streams, if b is fully consumed but there are excess a's
+i = 0;
+while (i < 2 ) {
+    if (stream1.length() > 0 && bLast == true) {
+        left = stream1.deQ();
+        print(left);
+        }
+    i = (i + 1);
+}
+
+
+
+
