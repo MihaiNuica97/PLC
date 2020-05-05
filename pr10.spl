@@ -20,7 +20,7 @@ while (line.length() > 0 ) {
     snd = fib2.pop();
     fib.push(fst + snd); 
     
-    //iterates through the input stream list and multiples the index of i with its fib coefficient
+    //iterates through the input stream list and multiplies the index of i with its fib coefficient
     while (i < input.length()) {
         output = output + (input[i] * fib[(input.length() - i - 1)]);
         i = (i + 1);
