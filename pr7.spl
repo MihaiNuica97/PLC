@@ -1,0 +1,24 @@
+var line = [1];
+
+while (line.length() > 0 ) {
+    //skip two lines, read 3rd
+    line = readLine;
+    line = readLine;
+    line = readLine;
+
+    //print int if not a blank line
+    if (line.length() > 0 ) {
+        print(line[0]);   
+    }
+
+    //skip 3 lines, read 4th
+    line = readLine;
+    line = readLine;
+    line = readLine;
+    line = readLine;
+
+    //print int if not a blank line
+    if (line.length() > 0 ) {
+        print(line[0]);   
+    }  
+}
