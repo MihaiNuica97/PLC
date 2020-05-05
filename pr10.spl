@@ -9,7 +9,7 @@ var fst;
 var snd;
 
 while (line.length() > 0 ) {
-    //resets counters, pushes next stream member to input input
+    //resets counters, pushes next stream member to input list
     output = 0;
     i = 0;
     input.push(line[0]);
