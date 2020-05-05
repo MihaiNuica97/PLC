@@ -1,0 +1,13 @@
+var line = readLine;
+var i = 0;
+
+while (line.length() > 0) {
+    //increments counter
+    i = (i+1);
+
+    //print int on current line then counter
+    print(line[0]);
+    print(i);
+    
+    line = readLine;
+}
