@@ -1,0 +1,71 @@
+var line = readLine;
+var checksum;
+var counter = 1;
+var a1;
+var a2;
+var a3;
+var a4;
+var a5;
+var b1;
+var b2;
+var b3;
+var b4;
+var b5;
+
+while (line.length() > 0) {
+    //resets counter
+    counter = 1;
+
+    //print a1 b1
+    a1 = line[0];
+    b1 = line[1];
+    print(a1);
+    print(b1);
+
+    //print a2 b2
+    line = readLine;
+    if (line.length() > 0){
+        a2 = line[0];
+        b2 = line[1];
+        print(a2);
+        print(b2);
+        counter = (counter+1);
+    }
+
+    //print a3 b3
+    line = readLine;
+    if (line.length() > 0){
+        a3 = line[0];
+        b3 = line[1];
+        print(a3);
+        print(b3);
+        counter = (counter+1);
+    }
+
+    //print a4 b4
+    line = readLine;
+    if (line.length() > 0){
+        a4 = line[0];
+        b4 = line[1];
+        print(a4);
+        print(b4);
+        counter = (counter+1);
+    }
+
+    //print a5 b5
+    line = readLine;
+    if (line.length() > 0){
+        a5 = line[0];
+        b5 = line[1];
+        print(a5);
+        print(b5);
+        counter = (counter+1);
+    }
+
+    //print checksum if there were 5 rows before it
+    if (counter == 5) {
+        checksum = (a1 - b1 + a2 - b2 + a3 - b3 + a4 - b4 + a5 - b5);
+        print(checksum);
+    }
+    line = readLine;
+}

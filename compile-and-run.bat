@@ -1,3 +1,3 @@
 alex SPLTokens.x
 happy SPLGrammar.y
-runhaskell Main.hs pr7.spl < stream7.txt
+runhaskell Main.hs pr8neater.spl < stream8.txt

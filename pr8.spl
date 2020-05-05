@@ -1,0 +1,26 @@
+var line = readLine;
+var checksum = 0;
+var i;
+var a;
+var b;
+
+
+while (line.length() > 0) {
+    //resets counter
+    i = 0;
+    //prints a(i) b(i) whilst lines are available
+    while (i < 5 && line.length() > 0) {
+        a = line[0];
+        b = line[1];
+        print(a);
+        print(b);
+        i = (i+1);
+        checksum = checksum + (a-b);
+        line = readLine;
+    }
+
+    //prints out checksum if 5 lines were available before it
+    if (i == 5) {
+        print(checksum);
+    }
+}
