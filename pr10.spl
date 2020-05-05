@@ -1,0 +1,31 @@
+var line = readLine;
+//predefine first 5 fib members
+var fib = [1, 1, 2, 3, 5, 8]; 
+var fib2 = [];
+var input = [];
+var output;
+var i;
+var fst;
+var snd;
+
+while (line.length() > 0 ) {
+    //resets counters, pushes next stream member to input input
+    output = 0;
+    i = 0;
+    input.push(line[0]);
+    
+    //add next fib member to the fib list
+    fib2 = fib;
+    fst = fib2.pop();
+    snd = fib2.pop();
+    fib.push(fst + snd); 
+    
+    //iterates through the input stream list and multiples the index of i with its fib coefficient
+    while (i < input.length()) {
+        output = output + (input[i] * fib[(input.length() - i - 1)]);
+        i = (i + 1);
+    }
+
+    print(output);
+    line = readLine;
+}
